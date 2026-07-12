@@ -1,19 +1,22 @@
-﻿using SIGERD.ViewModels.Seguridad.Usuarios;
-using SIGERD.Models.Seguridad;
+﻿using SIGERD.Models.Seguridad;
+using SIGERD.ViewModels.Seguridad.Usuarios;
 
 namespace SIGERD.Mappings
 {
     public static class UsuarioMapper
     {
         #region Entity -> ViewModel
+
         public static UsuarioListViewModel ToListViewModel(Usuario usuario)
         {
             return new UsuarioListViewModel
             {
                 IdUsuario = usuario.idUsuario,
                 NombreCompleto = usuario.nombreCompleto,
+                NombreUsuario = usuario.nombreUsuario,
                 Correo = usuario.correo,
-                Rol = usuario.Rol?.nombreRol ?? string.Empty,
+                Rol = usuario.Rol?.nombreRol ?? "Sin rol",
+                Delegacion = usuario.Delegacion?.nombreDelegacion ?? "Sin delegación",
                 Estado = usuario.estado
             };
         }
@@ -24,21 +27,12 @@ namespace SIGERD.Mappings
             {
                 IdUsuario = usuario.idUsuario,
                 NombreCompleto = usuario.nombreCompleto,
+                NombreUsuario = usuario.nombreUsuario,
                 Correo = usuario.correo,
                 Rol = usuario.Rol?.nombreRol ?? "Sin rol asignado",
-                Estado = usuario.estado 
-            };
-        }
-
-        public static UsuarioEditViewModel ToEditViewModel(Usuario usuario)
-        {
-            return new UsuarioEditViewModel
-            {
-                IdUsuario = usuario.idUsuario,
-                NombreCompleto = usuario.nombreCompleto,
-                Correo = usuario.correo,
+                Delegacion = usuario.Delegacion?.nombreDelegacion ?? "Sin delegación asignada",
                 Estado = usuario.estado,
-                IdRol = usuario.idRolUsuario
+                DebeCambiarClave = usuario.debeCambiarClave
             };
         }
 
@@ -50,22 +44,14 @@ namespace SIGERD.Mappings
         {
             return new Usuario
             {
-                nombreCompleto = model.NombreCompleto,
-                correo = model.Correo,
-                clave = model.Clave,
-                idRolUsuario = model.IdRol
-            };
-        }
-
-        public static Usuario ToEntity(UsuarioEditViewModel model)
-        {
-            return new Usuario
-            {
-                idUsuario = model.IdUsuario,
-                nombreCompleto = model.NombreCompleto,
-                correo = model.Correo,
+                nombreCompleto = model.NombreCompleto.Trim(),
+                nombreUsuario = model.NombreUsuario.Trim().ToLower(),
+                correo = model.Correo.Trim().ToLower(),
                 idRolUsuario = model.IdRol,
-                estado = model.Estado
+                idDelegacionUsuario = model.IdDelegacion,
+                estado = true,
+                debeCambiarClave = true,
+                VersionSeguridad = Guid.NewGuid()
             };
         }
 

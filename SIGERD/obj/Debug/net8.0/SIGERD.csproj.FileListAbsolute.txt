@@ -144,4 +144,5 @@ C:\Users\Jordys\Desktop\SISTEMA_SIGERD\SIGERD_SOLUTION\SIGERD\obj\Debug\net8.0\r
 C:\Users\Jordys\Desktop\SISTEMA_SIGERD\SIGERD_SOLUTION\SIGERD\obj\Debug\net8.0\SIGERD.pdb
 C:\Users\Jordys\Desktop\SISTEMA_SIGERD\SIGERD_SOLUTION\SIGERD\obj\Debug\net8.0\SIGERD.genruntimeconfig.cache
 C:\Users\Jordys\Desktop\SISTEMA_SIGERD\SIGERD_SOLUTION\SIGERD\obj\Debug\net8.0\ref\SIGERD.dll
+C:\Users\Jordys\Desktop\SISTEMA_SIGERD\SIGERD_SOLUTION\SIGERD\obj\Debug\net8.0\SIGERD.sourcelink.json
 C:\Users\Jordys\Desktop\SISTEMA_SIGERD\SIGERD_SOLUTION\SIGERD\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SIGERD")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+beca377e3a3c99820bdb26956a8e2ab9d46fbee0")]
 [assembly: System.Reflection.AssemblyProductAttribute("SIGERD")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SIGERD")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

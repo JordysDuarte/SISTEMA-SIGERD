@@ -102,49 +102,66 @@ namespace SIGERD.Controllers.Seguridad
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var model = new UsuarioCreateViewModel
-            {
-                Roles = await _selectListService.ObtenerRolesAsync()
-            };
+            var model = new UsuarioCreateViewModel();
+
+            await CargarCombosUsuarioAsync(model);
 
             return View(model);
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UsuarioCreateViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                model.Roles = await _selectListService.ObtenerRolesAsync();
-                return View(model); 
+                await CargarCombosUsuarioAsync(model);
+
+                return View(model);
             }
 
             try
             {
                 var usuario = UsuarioMapper.ToEntity(model);
 
-                await _usuarioService.CrearAsync(usuario);
-                MostrarExito("El usuario fue registrado correctamente");
+                await _usuarioService.CrearAsync(usuario, model.Clave);
+
+                MostrarExito("El usuario fue registrado correctamente.");
 
                 return RedirectToAction(nameof(Index));
             }
-            catch(Exception ex)
+            catch (InvalidOperationException ex)
             {
-                _logger.LogError(ex,
-                                 "Ocurrió un error al crear un usuario con correo {Correo}", model.Correo);
+                await CargarCombosUsuarioAsync(model);
 
-                return View(model);
-
-                model.Roles = await _selectListService.ObtenerRolesAsync();
-
-                ModelState.AddModelError(string.Empty, "No fue posible registrar el usuario. Intenta nuevamente");
+                ModelState.AddModelError(string.Empty, ex.Message);
 
                 return View(model);
             }
-            
-            
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Ocurrió un error al crear el usuario {NombreUsuario}.",
+                    model.NombreUsuario
+                );
+
+                await CargarCombosUsuarioAsync(model);
+
+                ModelState.AddModelError(
+                    string.Empty,
+                    "No fue posible registrar el usuario. Intenta nuevamente."
+                );
+
+                return View(model);
+            }
+        }
+
+        private async Task CargarCombosUsuarioAsync(UsuarioCreateViewModel model)
+        {
+            model.Roles = await _selectListService.ObtenerRolesAsync();
+
+            model.Delegaciones = await _selectListService.ObtenerDelegacionesAsync();
         }
 
         #endregion

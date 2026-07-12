@@ -6,31 +6,66 @@ namespace SIGERD.Configurations.Seguridad
 {
     public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
     {
-        public void Configure(EntityTypeBuilder<Usuario> entity)
+        public void Configure(EntityTypeBuilder<Usuario> builder)
         {
-            entity.ToTable("Usuarios", "Seguridad");
+            builder.ToTable("Usuarios", "Seguridad");
 
-            entity.HasKey(u => u.idUsuario);
+            builder.HasKey(u => u.idUsuario);
 
-            entity.Property(u => u.nombreCompleto)
-                .HasMaxLength(150)
-                .IsRequired();
+            builder.Property(u => u.idUsuario)
+                .HasColumnName("idUsuario");
 
-            entity.Property(u => u.correo)
+            builder.Property(u => u.nombreCompleto)
+                .IsRequired()
                 .HasMaxLength(100)
+                .HasColumnType("varchar(100)");
+
+            builder.Property(u => u.nombreUsuario)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasColumnType("varchar(50)");
+
+            builder.Property(u => u.correo)
+                .IsRequired()
+                .HasMaxLength(150)
+                .HasColumnType("varchar(150)");
+
+            builder.Property(u => u.claveHash)
+                .IsRequired()
+                .HasMaxLength(512)
+                .HasColumnType("varchar(512)");
+
+            builder.Property(u => u.estado)
                 .IsRequired();
 
-            entity.Property(u => u.clave)
-                .HasMaxLength(255)
+            builder.Property(u => u.debeCambiarClave)
                 .IsRequired();
 
-            entity.HasOne(u => u.Rol)
+            builder.Property(u => u.fechaUltimoCambioClave)
+                .HasColumnType("datetime2");
+
+            builder.Property(u => u.VersionSeguridad)
+                .IsRequired();
+
+            builder.Property(u => u.idRolUsuario)
+                .IsRequired();
+
+            builder.Property(u => u.idDelegacionUsuario)
+                .IsRequired();
+
+            builder.HasIndex(u => u.nombreUsuario)
+                .IsUnique()
+                .HasDatabaseName("UX_Usuarios_NombreUsuario");
+
+            builder.HasOne(u => u.Rol)
                 .WithMany(r => r.Usuarios)
                 .HasForeignKey(u => u.idRolUsuario)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(u => u.estado)
-                .IsRequired();
+            builder.HasOne(u => u.Delegacion)
+                .WithMany()
+                .HasForeignKey(u => u.idDelegacionUsuario)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

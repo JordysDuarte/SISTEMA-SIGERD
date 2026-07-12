@@ -1,8 +1,8 @@
-﻿using SIGERD.Interfaces.IRespositories.Seguridad;
+﻿using Microsoft.EntityFrameworkCore;
+using SIGERD.Data;
+using SIGERD.Interfaces.IRespositories.Seguridad;
 using SIGERD.Models.Seguridad;
 using SIGERD.Repositories.Base;
-using SIGERD.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace SIGERD.Repositories.Seguridad
 {
@@ -10,13 +10,14 @@ namespace SIGERD.Repositories.Seguridad
     {
         public UsuarioRepository(ApplicationDbContext context) : base(context)
         {
-
         }
 
         public override async Task<IEnumerable<Usuario>> ObtenerTodosAsync()
         {
             return await _context.Usuarios
                 .Include(u => u.Rol)
+                .Include(u => u.Delegacion)
+                .OrderBy(u => u.nombreCompleto)
                 .ToListAsync();
         }
 
@@ -24,25 +25,34 @@ namespace SIGERD.Repositories.Seguridad
         {
             return await _context.Usuarios
                 .Include(u => u.Rol)
+                .Include(u => u.Delegacion)
                 .FirstOrDefaultAsync(u => u.idUsuario == id);
         }
 
         public async Task<Usuario?> ObtenerPorCorreoAsync(string correo)
         {
-            return await _dbSet
+            return await _context.Usuarios
                 .FirstOrDefaultAsync(u => u.correo == correo);
+        }
+
+        public async Task<Usuario?> ObtenerPorNombreUsuarioAsync(string nombreUsuario)
+        {
+            return await _context.Usuarios
+                .Include(u => u.Rol)
+                .Include(u => u.Delegacion)
+                .FirstOrDefaultAsync(u => u.nombreUsuario == nombreUsuario);
         }
 
         public async Task<bool> ExisteCorreoAsync(string correo)
         {
-            return await _dbSet
+            return await _context.Usuarios
                 .AnyAsync(u => u.correo == correo);
         }
 
-        public async Task<Usuario?> ValidarCredencialesAsync(string correo, string clave)
+        public async Task<bool> ExisteNombreUsuarioAsync(string nombreUsuario)
         {
-            return await _dbSet
-                .FirstOrDefaultAsync(u => u.correo == correo && u.clave == clave && u.estado);
+            return await _context.Usuarios
+                .AnyAsync(u => u.nombreUsuario == nombreUsuario);
         }
     }
 }

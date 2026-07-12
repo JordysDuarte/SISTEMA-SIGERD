@@ -19,8 +19,7 @@ namespace SIGERD.Configurations.Ubicacion
                 .HasMaxLength(200)
                 .IsRequired();
             entity.Property(d => d.telefono)
-                .HasMaxLength(20)
-                .IsRequired();
+                .HasMaxLength(20);
             entity.HasOne(d => d.Departamento)
                 .WithMany(dep => dep.Delegaciones)
                 .HasForeignKey(d => d.idDepartamentoDelegacion)

@@ -10,6 +10,12 @@ using SIGERD.Repositories.Dashboard;
 using SIGERD.Services.Dashboard;
 using SIGERD.Interfaces.IRespositories.Dashboard;
 using SIGERD.Interfaces.IServices.Dashboard;
+using Microsoft.AspNetCore.Identity;
+using SIGERD.Models.Seguridad;
+using SIGERD.Interfaces.IRespositories.Ubicacion;
+using SIGERD.Interfaces.IServices.Ubicacion;
+using SIGERD.Repositories.Ubicacion;
+using SIGERD.Services.Ubicacion;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +37,11 @@ builder.Services.AddScoped<ISelectListService, SelectListService>();
 
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IDashboardService,  DashboardService>();
+
+builder.Services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
+
+builder.Services.AddScoped<IDelegacionRepository, DelegacionRepository>();
+builder.Services.AddScoped<IDelegacionService, DelegacionService>();
 
 
 
