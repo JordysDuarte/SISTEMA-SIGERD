@@ -1,0 +1,123 @@
+﻿@model SIGERD.ViewModels.Dashboard.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-header mb-4">
+    <div>
+        <h2 class="mb-1">Dashboard</h2>
+        <p class="text-muted mb-0">
+            Resumen general de SIGERD.
+        </p>
+    </div>
+
+    <div class="dashboard-date">
+        <i class="bi bi-calendar3 me-2"></i>
+        @DateTime.Now.ToString("dd/MM/yyyy")
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="dashboard-card dashboard-card-primary">
+            <div class="dashboard-card-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+
+            <div>
+                <span class="dashboard-card-title">Usuarios</span>
+                <h3 class="dashboard-card-value">@Model.TotalUsuarios</h3>
+                <small>Usuarios registrados</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="dashboard-card dashboard-card-success">
+            <div class="dashboard-card-icon">
+                <i class="bi bi-box-seam-fill"></i>
+            </div>
+
+            <div>
+                <span class="dashboard-card-title">Artículos</span>
+                <h3 class="dashboard-card-value">@Model.TotalArticulos</h3>
+                <small>Artículos registrados</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="dashboard-card dashboard-card-warning">
+            <div class="dashboard-card-icon">
+                <i class="bi bi-truck"></i>
+            </div>
+
+            <div>
+                <span class="dashboard-card-title">Envíos</span>
+                <h3 class="dashboard-card-value">@Model.TotalEnvios</h3>
+                <small>Envíos registrados</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="dashboard-card dashboard-card-info">
+            <div class="dashboard-card-icon">
+                <i class="bi bi-clipboard-check-fill"></i>
+            </div>
+
+            <div>
+                <span class="dashboard-card-title">Recepciones</span>
+                <h3 class="dashboard-card-value">@Model.TotalRecepciones</h3>
+                <small>Recepciones registradas</small>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mt-1">
+
+    <div class="col-12 col-xl-8">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                <h5 class="mb-1">Actividad operativa</h5>
+                <p class="text-muted mb-0">
+                    Esta sección mostrará próximamente los movimientos recientes.
+                </p>
+            </div>
+
+            <div class="card-body px-4 pb-4">
+                <div class="dashboard-empty-state">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <p class="mb-0">
+                        Las estadísticas operativas estarán disponibles al implementar el módulo de envíos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                <h5 class="mb-1">Próximas acciones</h5>
+                <p class="text-muted mb-0">
+                    Espacio reservado para la bandeja de trabajo.
+                </p>
+            </div>
+
+            <div class="card-body px-4 pb-4">
+                <div class="dashboard-empty-state">
+                    <i class="bi bi-check2-square"></i>
+                    <p class="mb-0">
+                        Aquí se mostrarán los envíos pendientes de imprimir, recibir o revisar.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

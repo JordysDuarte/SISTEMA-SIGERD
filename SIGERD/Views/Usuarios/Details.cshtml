@@ -1,0 +1,137 @@
+﻿@model SIGERD.ViewModels.Seguridad.Usuarios.UsuarioDetailsViewModel
+
+@{
+    ViewData["Title"] = "Detalle de Usuario";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+
+    <div>
+        <h2 class="mb-1">Detalle de Usuario</h2>
+
+        <p class="text-muted mb-0">
+            Consulta la información registrada para este usuario.
+        </p>
+    </div>
+
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>
+        Volver al listado
+    </a>
+
+</div>
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-header bg-white border-bottom pt-4 px-4">
+
+        <div class="d-flex align-items-center gap-3">
+
+            <div class="rounded-circle bg-primary-subtle text-primary d-flex justify-content-center align-items-center"
+                 style="width: 52px; height: 52px;">
+
+                <i class="bi bi-person-fill fs-4"></i>
+
+            </div>
+
+            <div>
+                <h5 class="mb-1">@Model.NombreCompleto</h5>
+
+                <span class="text-muted">
+                    Usuario registrado en SIGERD
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card-body p-4">
+
+        <div class="row g-4">
+
+            <div class="col-12 col-md-6">
+
+                <div class="border rounded-3 p-3 h-100">
+
+                    <span class="text-muted d-block small mb-1">
+                        Código
+                    </span>
+
+                    <strong>@Model.IdUsuario</strong>
+
+                </div>
+
+            </div>
+
+            <div class="col-12 col-md-6">
+
+                <div class="border rounded-3 p-3 h-100">
+
+                    <span class="text-muted d-block small mb-1">
+                        Correo electrónico
+                    </span>
+
+                    <strong>@Model.Correo</strong>
+
+                </div>
+
+            </div>
+
+            <div class="col-12 col-md-6">
+
+                <div class="border rounded-3 p-3 h-100">
+
+                    <span class="text-muted d-block small mb-1">
+                        Rol asignado
+                    </span>
+
+                    <strong>@Model.Rol</strong>
+
+                </div>
+
+            </div>
+
+            <div class="col-12 col-md-6">
+
+                <div class="border rounded-3 p-3 h-100">
+
+                    <span class="text-muted d-block small mb-1">
+                        Estado
+                    </span>
+
+                    @if (Model.Estado)
+                    {
+                        <span class="badge text-bg-success">
+                            Activo
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-secondary">
+                            Inactivo
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card-footer bg-white border-top px-4 py-3">
+
+        <div class="d-flex justify-content-end">
+
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>
+                Regresar
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

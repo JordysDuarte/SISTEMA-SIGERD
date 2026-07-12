@@ -1,0 +1,125 @@
+﻿@{
+    string? controladorActual = ViewContext.RouteData.Values["controller"]?.ToString();
+
+    bool dashboardActivo = string.Equals(
+        controladorActual,
+        "Dashboard",
+        StringComparison.OrdinalIgnoreCase
+    );
+
+    bool usuariosActivo = string.Equals(
+        controladorActual,
+        "Usuarios",
+        StringComparison.OrdinalIgnoreCase
+    );
+
+    bool rolesActivo = string.Equals(
+        controladorActual,
+        "Roles",
+        StringComparison.OrdinalIgnoreCase
+    );
+}
+
+<div class="sidebar">
+
+    <div class="sidebar-header">
+
+        <i class="bi bi-box-seam-fill"></i>
+
+        <span>SIGERD</span>
+
+    </div>
+
+    <ul class="sidebar-menu">
+
+        <li>
+            <a asp-controller="Dashboard"
+               asp-action="Index"
+               class="@(dashboardActivo ? "active" : "")">
+
+                <i class="bi bi-speedometer2"></i>
+
+                <span>Dashboard</span>
+
+            </a>
+        </li>
+
+        <li class="menu-title">
+            Seguridad
+        </li>
+
+        <li>
+            <a asp-controller="Usuarios"
+               asp-action="Index"
+               class="@(usuariosActivo ? "active" : "")">
+
+                <i class="bi bi-people-fill"></i>
+
+                <span>Usuarios</span>
+
+            </a>
+        </li>
+
+        <li>
+            <a asp-controller="Roles"
+               asp-action="Index"
+               class="@(rolesActivo ? "active" : "")">
+
+                <i class="bi bi-shield-lock-fill"></i>
+
+                <span>Roles</span>
+
+            </a>
+        </li>
+
+        <li class="menu-title">
+            Inventario
+        </li>
+
+        <li>
+            <a href="#">
+
+                <i class="bi bi-box-fill"></i>
+
+                <span>Artículos</span>
+
+            </a>
+        </li>
+
+        <li>
+            <a href="#">
+
+                <i class="bi bi-arrow-down-square-fill"></i>
+
+                <span>Recepciones</span>
+
+            </a>
+        </li>
+
+        <li>
+            <a href="#">
+
+                <i class="bi bi-arrow-up-square-fill"></i>
+
+                <span>Despachos</span>
+
+            </a>
+        </li>
+
+        <li class="menu-title">
+            Reportes
+        </li>
+
+        <li>
+            <a href="#">
+
+                <i class="bi bi-bar-chart-fill"></i>
+
+                <span>Reportes</span>
+
+            </a>
+        </li>
+
+    </ul>
+
+</div>
