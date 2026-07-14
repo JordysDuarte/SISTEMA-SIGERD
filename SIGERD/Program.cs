@@ -16,6 +16,7 @@ using SIGERD.Interfaces.IRespositories.Ubicacion;
 using SIGERD.Interfaces.IServices.Ubicacion;
 using SIGERD.Repositories.Ubicacion;
 using SIGERD.Services.Ubicacion;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,22 @@ builder.Services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
 builder.Services.AddScoped<IDelegacionRepository, DelegacionRepository>();
 builder.Services.AddScoped<IDelegacionService, DelegacionService>();
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+{
+    options.LoginPath = "/Auth/Login";
+    options.LogoutPath = "/Auth/Logout";
+    options.AccessDeniedPath = "/Auth/AccessDenied";
+
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+    options.SlidingExpiration = true;
+
+    options.Cookie.Name = "SIGERD.Auth";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+});
+
 
 
 var app = builder.Build();
@@ -59,6 +76,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

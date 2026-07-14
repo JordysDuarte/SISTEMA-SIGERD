@@ -10,21 +10,45 @@
 
     <div class="navbar-right">
 
-        <span class="user-name">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <span class="user-name">
 
-            <i class="bi bi-person-circle"></i>
+                <i class="bi bi-person-circle"></i>
 
-            Jordys
+                @User.Identity.Name
 
-        </span>
+            </span>
 
-        <a href="#" class="logout">
+            <form asp-controller="Auth"
+                  asp-action="Logout"
+                  method="post"
+                  class="m-0">
 
-            <i class="bi bi-box-arrow-right"></i>
+                @Html.AntiForgeryToken()
 
-            Salir
+                <button type="submit" class="logout-button">
 
-        </a>
+                    <i class="bi bi-box-arrow-right"></i>
+
+                    Salir
+
+                </button>
+
+            </form>
+        }
+        else
+        {
+            <a asp-controller="Auth"
+               asp-action="Login"
+               class="logout">
+
+                <i class="bi bi-box-arrow-in-right"></i>
+
+                Iniciar sesión
+
+            </a>
+        }
 
     </div>
 
