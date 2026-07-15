@@ -60,6 +60,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
+builder.Services.AddAuthorization();
+
 
 
 var app = builder.Build();
@@ -78,6 +80,30 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
+
+app.Use(async (context, next) =>
+{
+    bool usuarioAutenticado = context.User.Identity?.IsAuthenticated == true;
+
+    bool debeCambiarClave =
+        context.User.FindFirst("DebeCambiarClave")?.Value == "true";
+
+    string rutaActual = context.Request.Path.Value ?? string.Empty;
+
+    bool esRutaPermitida =
+        rutaActual.StartsWith("/Auth/CambiarClaveInicial", StringComparison.OrdinalIgnoreCase) ||
+        rutaActual.StartsWith("/Auth/Logout", StringComparison.OrdinalIgnoreCase) ||
+        rutaActual.StartsWith("/Auth/Login", StringComparison.OrdinalIgnoreCase) ||
+        rutaActual.StartsWith("/Auth/AccessDenied", StringComparison.OrdinalIgnoreCase);
+
+    if (usuarioAutenticado && debeCambiarClave && !esRutaPermitida)
+    {
+        context.Response.Redirect("/Auth/CambiarClaveInicial");
+        return;
+    }
+
+    await next();
+});
 
 app.UseAuthorization();
 

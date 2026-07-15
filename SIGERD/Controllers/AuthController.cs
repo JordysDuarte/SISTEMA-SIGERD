@@ -135,6 +135,8 @@ namespace SIGERD.Controllers
             {
                 await _authService.CambiarClaveInicialAsync(idUsuario, model.NuevaClave);
 
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
                 MostrarExito("La contraseña fue actualizada correctamente. Inicie sesión nuevamente");
 
                 return RedirectToAction(nameof(Login));

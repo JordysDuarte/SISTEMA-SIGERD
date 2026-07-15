@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SIGERD.Interfaces.IServices.Dashboard;
 using SIGERD.ViewModels.Dashboard;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SIGERD.Controllers
 {
+    [Authorize]
     public class DashboardController : BaseController
     {
 
