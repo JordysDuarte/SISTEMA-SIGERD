@@ -17,6 +17,7 @@ using SIGERD.Interfaces.IServices.Ubicacion;
 using SIGERD.Repositories.Ubicacion;
 using SIGERD.Services.Ubicacion;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using SIGERD.Data.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,8 +64,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 
+builder.Services.AddScoped<DataSeeder>();
+
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+
+    await dataSeeder.SeedAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

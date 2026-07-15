@@ -15,7 +15,7 @@ namespace SIGERD.Models.Seguridad
         public bool estado { get; set; }
         public bool debeCambiarClave { get; set; }
         public DateTime? fechaUltimoCambioClave { get; set; }
-        public Guid VersionSeguridad { get; set; }
+        public Guid versionSeguridad { get; set; }
         public int idRolUsuario { get; set; }
         public Rol Rol { get; set; } = null!;
         public int idDelegacionUsuario { get; set; }

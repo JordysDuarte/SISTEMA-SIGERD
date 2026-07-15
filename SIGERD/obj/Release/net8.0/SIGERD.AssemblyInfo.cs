@@ -11,9 +11,8 @@
 using System;
 using System.Reflection;
 
-[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("9b160ae2-31e5-4f86-8087-abb8cf35ba46")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("SIGERD")]
-[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ea68fe6684542f5e8d808c2859e283a5a4b1984")]
 [assembly: System.Reflection.AssemblyProductAttribute("SIGERD")]

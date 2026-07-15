@@ -72,7 +72,7 @@ namespace SIGERD.Services.Seguridad
                 IdDelegacion = usuario.idDelegacionUsuario,
                 Delegacion = usuario.Delegacion?.nombreDelegacion ?? string.Empty,
                 DebeCambiarClave = usuario.debeCambiarClave,
-                VersionSeguridad = usuario.VersionSeguridad
+                VersionSeguridad = usuario.versionSeguridad
             };
 
             return ResultadoAutenticacionDto.Correcto(usuarioSesion);
@@ -105,7 +105,7 @@ namespace SIGERD.Services.Seguridad
             usuario.claveHash = _passwordHasher.HashPassword(usuario, nuevaClave);
             usuario.debeCambiarClave = false;
             usuario.fechaUltimoCambioClave = DateTime.UtcNow;
-            usuario.VersionSeguridad = Guid.NewGuid();
+            usuario.versionSeguridad = Guid.NewGuid();
 
             _usuarioRepository.Actualizar(usuario);
 

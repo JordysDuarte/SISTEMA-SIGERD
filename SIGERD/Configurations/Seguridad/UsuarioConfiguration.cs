@@ -44,7 +44,7 @@ namespace SIGERD.Configurations.Seguridad
             builder.Property(u => u.fechaUltimoCambioClave)
                 .HasColumnType("datetime2");
 
-            builder.Property(u => u.VersionSeguridad)
+            builder.Property(u => u.versionSeguridad)
                 .IsRequired();
 
             builder.Property(u => u.idRolUsuario)

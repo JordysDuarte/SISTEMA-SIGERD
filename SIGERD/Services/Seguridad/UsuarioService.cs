@@ -100,7 +100,7 @@ namespace SIGERD.Services.Seguridad
             usuario.estado = true;
             usuario.debeCambiarClave = true;
             usuario.fechaUltimoCambioClave = DateTime.UtcNow;
-            usuario.VersionSeguridad = Guid.NewGuid();
+            usuario.versionSeguridad = Guid.NewGuid();
 
             usuario.claveHash = _passwordHasher.HashPassword(usuario, claveInicial);
 

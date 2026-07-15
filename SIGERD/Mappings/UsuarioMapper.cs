@@ -51,7 +51,7 @@ namespace SIGERD.Mappings
                 idDelegacionUsuario = model.IdDelegacion,
                 estado = true,
                 debeCambiarClave = true,
-                VersionSeguridad = Guid.NewGuid()
+                versionSeguridad = Guid.NewGuid()
             };
         }
 
