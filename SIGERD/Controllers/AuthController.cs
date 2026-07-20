@@ -201,13 +201,11 @@ namespace SIGERD.Controllers
 
             var propiedades = new AuthenticationProperties
             {
-                IsPersistent = recordarSesion
+                IsPersistent = false,
+                AllowRefresh = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
             };
 
-            if (recordarSesion)
-            {
-                propiedades.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7);
-            }
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,

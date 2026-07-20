@@ -1,4 +1,6 @@
-﻿@{
+﻿@using SIGERD.Constants.Seguridad
+
+@{
     string? controladorActual = ViewContext.RouteData.Values["controller"]?.ToString();
 
     bool dashboardActivo = string.Equals(
@@ -18,6 +20,8 @@
         "Roles",
         StringComparison.OrdinalIgnoreCase
     );
+
+    bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
 }
 
 <div class="sidebar">
@@ -44,33 +48,37 @@
             </a>
         </li>
 
-        <li class="menu-title">
-            Seguridad
-        </li>
+        @if (esSuperAdministrador)
+        {
+            <li class="menu-title">
+                Seguridad
+            </li>
 
-        <li>
-            <a asp-controller="Usuarios"
-               asp-action="Index"
-               class="@(usuariosActivo ? "active" : "")">
+            <li>
+                <a asp-controller="Usuarios"
+                   asp-action="Index"
+                   class="@(usuariosActivo ? "active" : "")">
 
-                <i class="bi bi-people-fill"></i>
+                    <i class="bi bi-people-fill"></i>
 
-                <span>Usuarios</span>
+                    <span>Usuarios</span>
 
-            </a>
-        </li>
+                </a>
+            </li>
 
-        <li>
-            <a asp-controller="Roles"
-               asp-action="Index"
-               class="@(rolesActivo ? "active" : "")">
+            <li>
+                <a asp-controller="Roles"
+                   asp-action="Index"
+                   class="@(rolesActivo ? "active" : "")">
 
-                <i class="bi bi-shield-lock-fill"></i>
+                    <i class="bi bi-shield-lock-fill"></i>
 
-                <span>Roles</span>
+                    <span>Roles</span>
 
-            </a>
-        </li>
+                </a>
+            </li>
+        }
+        
 
         <li class="menu-title">
             Inventario

@@ -6,10 +6,11 @@ using SIGERD.Interfaces.IServices.Common;
 using SIGERD.Mappings;
 using SIGERD.ViewModels.Seguridad.Usuarios;
 using Microsoft.AspNetCore.Authorization;
+using SIGERD.Constants.Seguridad;
 
 namespace SIGERD.Controllers.Seguridad
 {
-    [Authorize]
+    [Authorize(Roles = RolesSistema.SuperAdministrador)]
     public class UsuariosController : BaseController
     {
         #region Campos
