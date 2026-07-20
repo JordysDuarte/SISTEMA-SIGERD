@@ -1,10 +1,22 @@
-.vs/
-[Bb]in/
-[Oo/bj
+# Build results
 bin/
 obj/
 **/bin/
 **/obj/
+
+# Visual Studio
 .vs/
 *.user
 *.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
