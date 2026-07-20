@@ -1,3 +1,10 @@
 .vs/
 [Bb]in/
 [Oo/bj
+bin/
+obj/
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
