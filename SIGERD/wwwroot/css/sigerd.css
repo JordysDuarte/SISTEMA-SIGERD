@@ -392,13 +392,30 @@ body {
     position: relative;
 }
 
-    .auth-input-group i {
+.auth-input-group {
+    position: relative;
+}
+
+    .auth-input-group .auth-input-icon {
         color: #8a98a8;
         font-size: 1.2rem;
         left: 16px;
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .auth-input-group .form-control {
+        height: 50px;
+        padding-left: 48px;
+        border-radius: 9px;
+        border: 1px solid #ccd6df;
+    }
+
+    .auth-input-group.password-field .form-control {
+        padding-right: 48px;
     }
 
     .auth-input-group .form-control {
@@ -517,3 +534,50 @@ body {
         align-items: flex-start;
     }
 }
+
+
+/* ================================
+   PASSWORD TOGGLE
+================================ */
+
+.password-field {
+    position: relative;
+}
+
+    .password-field .form-control {
+        padding-right: 48px;
+    }
+
+.password-toggle-button {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #8a98a8;
+    display: flex;
+    height: 34px;
+    justify-content: center;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: background 0.2s ease, color 0.2s ease;
+    width: 34px;
+}
+
+    .password-toggle-button:hover {
+        background: rgba(15, 76, 129, 0.08);
+        color: #0F4C81;
+    }
+
+    .password-toggle-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.15rem rgba(15, 76, 129, 0.18);
+    }
+
+    .password-toggle-button i {
+        color: inherit;
+        font-size: 1.1rem;
+        position: static;
+        transform: none;
+    }

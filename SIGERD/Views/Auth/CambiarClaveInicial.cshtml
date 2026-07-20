@@ -41,13 +41,24 @@
                     <div class="mb-3">
                         <label asp-for="NuevaClave" class="form-label"></label>
 
-                        <div class="auth-input-group">
-                            <i class="bi bi-lock"></i>
+                        <div class="auth-input-group password-field">
+                            <i class="bi bi-lock auth-input-icon"></i>
+
                             <input asp-for="NuevaClave"
                                    type="password"
                                    class="form-control"
                                    placeholder="Ingrese su nueva contraseña"
                                    autocomplete="new-password" />
+
+                            <button type="button"
+                                    class="password-toggle-button"
+                                    data-toggle-password
+                                    title="Mostrar contraseña"
+                                    aria-label="Mostrar contraseña">
+
+                                <i class="bi bi-eye"></i>
+
+                            </button>
                         </div>
 
                         <span asp-validation-for="NuevaClave" class="text-danger"></span>
@@ -56,13 +67,24 @@
                     <div class="mb-4">
                         <label asp-for="ConfirmarClave" class="form-label"></label>
 
-                        <div class="auth-input-group">
-                            <i class="bi bi-lock-fill"></i>
+                        <div class="auth-input-group password-field">
+                            <i class="bi bi-lock-fill auth-input-icon"></i>
+
                             <input asp-for="ConfirmarClave"
                                    type="password"
                                    class="form-control"
                                    placeholder="Confirme su nueva contraseña"
                                    autocomplete="new-password" />
+
+                            <button type="button"
+                                    class="password-toggle-button"
+                                    data-toggle-password
+                                    title="Mostrar contraseña"
+                                    aria-label="Mostrar contraseña">
+
+                                <i class="bi bi-eye"></i>
+
+                            </button>
                         </div>
 
                         <span asp-validation-for="ConfirmarClave" class="text-danger"></span>

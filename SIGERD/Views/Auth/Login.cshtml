@@ -57,10 +57,11 @@
                         <label asp-for="NombreUsuario" class="form-label"></label>
 
                         <div class="auth-input-group">
-                            <i class="bi bi-person"></i>
+                            <i class="bi bi-person auth-input-icon"></i>
                             <input asp-for="NombreUsuario"
                                    class="form-control"
-                                   placeholder="Ingrese su nombre de usuario" />
+                                   placeholder="Ingrese su nombre de usuario" 
+                                   autocomplete="username" />
                         </div>
 
                         <span asp-validation-for="NombreUsuario" class="text-danger"></span>
@@ -69,13 +70,24 @@
                     <div class="mb-3">
                         <label asp-for="Clave" class="form-label"></label>
 
-                        <div class="auth-input-group">
-                            <i class="bi bi-lock"></i>
+                        <div class="auth-input-group password-field">
+                            <i class="bi bi-lock auth-input-icon"></i>
+
                             <input asp-for="Clave"
                                    type="password"
                                    class="form-control"
                                    placeholder="Ingrese su contraseña"
                                    autocomplete="current-password" />
+
+                            <button type="button"
+                                    class="password-toggle-button"
+                                    data-toggle-password
+                                    title="Mostrar contraseña"
+                                    aria-label="Mostrar contraseña">
+
+                                <i class="bi bi-eye"></i>
+
+                            </button>
                         </div>
 
                         <span asp-validation-for="Clave" class="text-danger"></span>
