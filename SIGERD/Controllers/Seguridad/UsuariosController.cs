@@ -93,6 +93,8 @@ namespace SIGERD.Controllers.Seguridad
                 _logger.LogError(ex,
                                  "Ocurrió un error al consultar el detalle del usuario con Id {IdUsuario}", id);
 
+                MostrarError("No fue posible cargar el detalle del usuario.");
+
                 return RedirectToAction(nameof(Index));
             }
         }
