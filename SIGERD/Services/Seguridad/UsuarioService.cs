@@ -110,8 +110,68 @@ namespace SIGERD.Services.Seguridad
 
         public async Task ActualizarAsync(Usuario usuario)
         {
-            _usuarioRepository.Actualizar(usuario);
+            if (usuario.idUsuario <= 0)
+            {
+                throw new InvalidOperationException("El identificador del usuario no es válido");
+            }
 
+            string nombreCompleto = usuario.nombreCompleto.Trim();
+            string nombreUsuario = usuario.nombreUsuario.Trim().ToLower();
+            string correo = usuario.correo.Trim().ToLower();
+
+            if (string.IsNullOrWhiteSpace(nombreCompleto))
+            {
+                throw new InvalidOperationException("El nombre completo es obligatorio");
+            }
+
+            if (string.IsNullOrWhiteSpace(nombreUsuario))
+            {
+                throw new InvalidOperationException("El nombre de usuario es obligatorio");
+            }
+
+            if (string.IsNullOrWhiteSpace(correo))
+            {
+                throw new InvalidOperationException("El correo electrónico es obligatorio");
+            }
+
+            if (usuario.idRolUsuario <= 0)
+            {
+                throw new InvalidOperationException("Debe seleccionar un rol válido");
+            }
+
+            var usuarioActual = await _usuarioRepository.ObtenerPorIdAsync(usuario.idUsuario);
+
+            if (usuarioActual == null)
+            {
+                throw new InvalidOperationException("El usuario que intenta editar no existe");
+            }
+
+            bool existeNombreUsuario = await _usuarioRepository.ExisteNombreUsuarioAsync(nombreUsuario, usuario.idUsuario);
+
+            if (existeNombreUsuario)
+            {
+                throw new InvalidOperationException("Ya existe otro usuario con ese nombre de usuario.");
+            }
+
+            bool existeCorreo = await _usuarioRepository.ExisteCorreoAsync(
+                correo,
+                usuario.idUsuario
+);
+
+            if (existeCorreo)
+            {
+                throw new InvalidOperationException("Ya existe otro usuario con ese correo electrónico.");
+            }
+
+            usuarioActual.nombreCompleto = nombreCompleto;
+            usuarioActual.nombreUsuario = nombreUsuario;
+            usuarioActual.correo = correo;
+            usuarioActual.idRolUsuario = usuario.idRolUsuario;
+            usuarioActual.idDelegacionUsuario = usuario.idDelegacionUsuario;
+
+            usuarioActual.versionSeguridad = Guid.NewGuid();
+
+            _usuarioRepository.Actualizar(usuarioActual);
             await _usuarioRepository.GuardarAsync();
         }
 

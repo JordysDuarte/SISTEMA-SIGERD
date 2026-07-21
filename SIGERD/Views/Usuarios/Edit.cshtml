@@ -1,5 +1,133 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model SIGERD.ViewModels.Seguridad.Usuarios.UsuarioEditViewModel
+
 @{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+
+    <div>
+        <h2 class="mb-1">Editar Usuario</h2>
+
+        <p class="text-muted mb-0">
+            Actualiza la información general del usuario seleccionado.
+        </p>
+    </div>
+
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>
+        Volver al listado
+    </a>
+
+</div>
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-body p-4">
+
+        <form asp-action="Edit" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input asp-for="IdUsuario" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+
+                <div class="col-12 col-md-6">
+
+                    <label asp-for="NombreCompleto" class="form-label"></label>
+
+                    <input asp-for="NombreCompleto"
+                           class="form-control"
+                           placeholder="Ingrese el nombre completo" />
+
+                    <span asp-validation-for="NombreCompleto" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-12 col-md-6">
+
+                    <label asp-for="NombreUsuario" class="form-label"></label>
+
+                    <input asp-for="NombreUsuario"
+                           class="form-control"
+                           placeholder="Ingrese el nombre de usuario"
+                           autocomplete="username" />
+
+                    <span asp-validation-for="NombreUsuario" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-12 col-md-6">
+
+                    <label asp-for="Correo" class="form-label"></label>
+
+                    <input asp-for="Correo"
+                           class="form-control"
+                           placeholder="Ingrese el correo electrónico"
+                           autocomplete="email" />
+
+                    <span asp-validation-for="Correo" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-12 col-md-6">
+
+                    <label asp-for="IdRol" class="form-label"></label>
+
+                    <select asp-for="IdRol"
+                            asp-items="Model.Roles"
+                            class="form-select">
+
+                        <option value="">Seleccione un rol</option>
+
+                    </select>
+
+                    <span asp-validation-for="IdRol" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-12 col-md-6">
+
+                    <label asp-for="IdDelegacion" class="form-label"></label>
+
+                    <select asp-for="IdDelegacion"
+                            asp-items="Model.Delegaciones"
+                            class="form-select">
+
+                        <option value="">Seleccione una delegación</option>
+
+                    </select>
+
+                    <span asp-validation-for="IdDelegacion" class="text-danger"></span>
+
+                </div>
+
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="d-flex justify-content-end gap-2">
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-2"></i>
+                    Guardar cambios
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

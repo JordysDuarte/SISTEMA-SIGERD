@@ -9,8 +9,8 @@ namespace SIGERD.Interfaces.IRespositories.Seguridad
 
         Task<Usuario?> ObtenerPorNombreUsuarioAsync(string nombreUsuario);
 
-        Task<bool> ExisteCorreoAsync(string correo);
+        Task<bool> ExisteCorreoAsync(string correo, int? idUsuarioExcluir = null);
 
-        Task<bool> ExisteNombreUsuarioAsync(string nombreUsuario);
+        Task<bool> ExisteNombreUsuarioAsync(string nombreUsuario, int? idUsuarioExcluir = null);
     }
 }

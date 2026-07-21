@@ -23,15 +23,119 @@ namespace SIGERD.Controllers.Seguridad
 
         #region Constructor
 
-        public UsuariosController(IUsuarioService usuarioService, 
+        public UsuariosController(IUsuarioService usuarioService,
                                   ISelectListService selectListService,
                                   ILogger<UsuariosController> logger)
         {
             _usuarioService = usuarioService;
             _selectListService = selectListService;
-            _logger = logger;   
+            _logger = logger;
         }
 
+        #endregion
+
+
+        #region Edit
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            if (id <= 0)
+            {
+                MostrarAdvertencia("El identificador del usuario no es válido");
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                var usuario = await _usuarioService.ObtenerPorIdAsync(id);
+
+                if (usuario is null)
+                {
+                    MostrarAdvertencia("El usuario solicitado no existe o no está disponible");
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var model = UsuarioMapper.ToEditViewModel(usuario);
+
+                await CargarCombosUsuarioAsync(model);
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Ocurrió un error al cargar el formulario de edición del usuario con Id {IdUsuario}.", id);
+
+                MostrarError("No fue posible cargar el formulario de edición del usuario");
+
+                return RedirectToAction(nameof(Index));
+            }
+
+
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(UsuarioEditViewModel model)
+        {
+            if (model.IdUsuario <= 0)
+            {
+                MostrarAdvertencia("El identificador del usuario no es válido.");
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await CargarCombosUsuarioAsync(model);
+
+                return View(model);
+            }
+
+            try
+            {
+                var usuario = UsuarioMapper.ToEntity(model);
+
+                await _usuarioService.ActualizarAsync(usuario);
+
+                MostrarExito("El usuario fue actualizado correctamente.");
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+
+                await CargarCombosUsuarioAsync(model);
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Ocurrió un error al actualizar el usuario con Id {IdUsuario}.",
+                    model.IdUsuario
+                );
+
+                MostrarError("No fue posible actualizar el usuario.");
+
+                await CargarCombosUsuarioAsync(model);
+
+                return View(model);
+            }
+        }
+
+        private async Task CargarCombosUsuarioAsync(UsuarioEditViewModel model)
+            {
+                model.Roles = await _selectListService.ObtenerRolesAsync();
+                model.Delegaciones = await _selectListService.ObtenerDelegacionesAsync();
+            }
+        
         #endregion
 
         #region Index

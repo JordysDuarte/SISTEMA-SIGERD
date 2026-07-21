@@ -43,16 +43,24 @@ namespace SIGERD.Repositories.Seguridad
                 .FirstOrDefaultAsync(u => u.nombreUsuario == nombreUsuario);
         }
 
-        public async Task<bool> ExisteCorreoAsync(string correo)
+        public async Task<bool> ExisteCorreoAsync(string correo, int? idUsuarioExcluir = null)
         {
+            correo = correo.Trim().ToLower();
+
             return await _context.Usuarios
-                .AnyAsync(u => u.correo == correo);
+                .AnyAsync(u => u.correo == correo &&
+                            (!idUsuarioExcluir.HasValue || u.idUsuario != idUsuarioExcluir.Value)
+                            );
         }
 
-        public async Task<bool> ExisteNombreUsuarioAsync(string nombreUsuario)
+        public async Task<bool> ExisteNombreUsuarioAsync(string nombreUsuario, int? idUsuarioExcluir = null)
         {
+            nombreUsuario = nombreUsuario.Trim().ToLower();
+
             return await _context.Usuarios
-                .AnyAsync(u => u.nombreUsuario == nombreUsuario);
+                .AnyAsync(u => u.nombreUsuario == nombreUsuario &&
+                            (!idUsuarioExcluir.HasValue || u.idUsuario != idUsuarioExcluir.Value)
+                            );
         }
     }
 }

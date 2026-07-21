@@ -36,6 +36,20 @@ namespace SIGERD.Mappings
             };
         }
 
+
+        public static UsuarioEditViewModel ToEditViewModel(Usuario usuario)
+        {
+            return new UsuarioEditViewModel
+            {
+                IdUsuario = usuario.idUsuario,
+                NombreCompleto = usuario.nombreCompleto,
+                NombreUsuario = usuario.nombreUsuario,
+                Correo = usuario.correo,
+                IdRol = usuario.idRolUsuario,
+                IdDelegacion = usuario.idDelegacionUsuario
+            };
+        }
+
         #endregion
 
         #region ViewModel -> Entity
@@ -52,6 +66,20 @@ namespace SIGERD.Mappings
                 estado = true,
                 debeCambiarClave = true,
                 versionSeguridad = Guid.NewGuid()
+            };
+        }
+
+
+        public static Usuario ToEntity(UsuarioEditViewModel model)
+        {
+            return new Usuario
+            {
+                idUsuario = model.IdUsuario,
+                nombreCompleto = model.NombreCompleto,
+                nombreUsuario = model.NombreUsuario,
+                correo = model.Correo,
+                idRolUsuario = model.IdRol,
+                idDelegacionUsuario = model.IdDelegacion,
             };
         }
 
