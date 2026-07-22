@@ -9,6 +9,12 @@ body {
     font-family: 'Segoe UI',sans-serif;
 }
 
+
+.cabecera {
+    background-color: #0F4C81;
+    color: white;
+}
+
 .sidebar {
     width: 260px;
     height: 100vh;

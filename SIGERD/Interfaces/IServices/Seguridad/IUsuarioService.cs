@@ -21,5 +21,7 @@ namespace SIGERD.Interfaces.IServices.Seguridad
         Task ActualizarAsync(Usuario usuario);
 
         Task EliminarAsync(int id);
+
+        Task CambiarEstadoAsync(int idUsuario, bool nuevoEstado, int idUsuarioEjecutor);
     }
 }

@@ -31,7 +31,7 @@
 
     <table class="table table-striped table-hover">
 
-        <thead class="table-dark">
+        <thead class="fs-5 cabecera">
 
             <tr>
 
@@ -101,13 +101,50 @@
 
                         </a>
 
-                        <a asp-action="Delete"
-                           asp-route-id="@item.IdUsuario"
-                           class="btn btn-danger btn-sm">
+                        @if (item.Estado)
+                        {
+                            <form asp-action="CambiarEstado"
+                                  method="post"
+                                  class="d-inline">
 
-                            Eliminar
+                                @Html.AntiForgeryToken()
 
-                        </a>
+                                <input type="hidden" name="id" value="@item.IdUsuario" />
+                                <input type="hidden" name="nuevoEstado" value="false" />
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger w-30"
+                                        title="Desactivar usuario"
+                                        onclick="return confirm('¿Está seguro que desea desactivar este usuario?');">
+
+                                    Inactivar
+
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="CambiarEstado"
+                                  method="post"
+                                  class="d-inline">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden" name="id" value="@item.IdUsuario" />
+                                <input type="hidden" name="nuevoEstado" value="true" />
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-success w-30"
+                                        title="Activar usuario"
+                                        onclick="return confirm('¿Está seguro que desea activar este usuario?');">
+
+                                   Activar
+
+                                </button>
+
+                            </form>
+                        }
 
                     </td>
 

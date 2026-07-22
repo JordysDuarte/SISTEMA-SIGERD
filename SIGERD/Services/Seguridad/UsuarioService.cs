@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SIGERD.Constants.Seguridad;
 using SIGERD.Interfaces.IRespositories.Seguridad;
 using SIGERD.Interfaces.IServices.Seguridad;
 using SIGERD.Models.Seguridad;
@@ -186,6 +187,57 @@ namespace SIGERD.Services.Seguridad
 
             _usuarioRepository.Eliminar(usuario);
 
+            await _usuarioRepository.GuardarAsync();
+        }
+
+        public async Task CambiarEstadoAsync(int idUsuario, bool nuevoEstado, int idUsuarioEjecutor)
+        {
+            if (idUsuario <= 0)
+            {
+                throw new InvalidOperationException("El identificador del usuario no es válido");
+            }
+
+            if (idUsuarioEjecutor <= 0)
+            {
+                throw new InvalidOperationException("No fue posible identificar el usuario que realiza la operación");
+            }
+
+            if (idUsuario == idUsuarioEjecutor && !nuevoEstado)
+            {
+                throw new InvalidOperationException("No puedes desactivar tu propia cuenta de usuario.");
+            }
+
+            var usuarioActual = await _usuarioRepository.ObtenerPorIdAsync(idUsuario);
+
+            if (usuarioActual is null)
+            {
+                throw new InvalidOperationException("El usuario solicitado no existe.");
+            }
+
+            if (usuarioActual.estado == nuevoEstado)
+            {
+                string mensaje = nuevoEstado ? "El usuario ya se encuentra activo" : "El usuario ya se encuentra inactivo";
+
+                throw new InvalidOperationException(mensaje);
+            }
+
+            if (!nuevoEstado && usuarioActual.Rol?.nombreRol == RolesSistema.SuperAdministrador)
+            {
+                var usuarios = await _usuarioRepository.ObtenerTodosAsync();
+
+                int totalSuperAdministradoresActivos = usuarios.Count(u => u.estado && u.Rol != null && u.Rol.nombreRol == RolesSistema.SuperAdministrador);
+
+                if(totalSuperAdministradoresActivos <= 1)
+                {
+                    throw new InvalidOperationException("No se puede desactivar el último Super Administrador activo del sistema.");
+                }
+            }
+
+
+            usuarioActual.estado = nuevoEstado;
+            usuarioActual.versionSeguridad = Guid.NewGuid();
+
+            _usuarioRepository.Actualizar(usuarioActual);
             await _usuarioRepository.GuardarAsync();
         }
     }

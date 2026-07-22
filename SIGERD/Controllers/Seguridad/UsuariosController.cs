@@ -7,6 +7,7 @@ using SIGERD.Mappings;
 using SIGERD.ViewModels.Seguridad.Usuarios;
 using Microsoft.AspNetCore.Authorization;
 using SIGERD.Constants.Seguridad;
+using System.Security.Claims;
 
 namespace SIGERD.Controllers.Seguridad
 {
@@ -30,6 +31,74 @@ namespace SIGERD.Controllers.Seguridad
             _usuarioService = usuarioService;
             _selectListService = selectListService;
             _logger = logger;
+        }
+
+        #endregion
+
+
+        #region Cambiar Estado
+        /// <summary>
+        /// Activa o desactiva un usuario sin eliminarlo
+        /// </summary>
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CambiarEstado(int id, bool nuevoEstado)
+        {
+            if (id <= 0)
+            {
+                MostrarAdvertencia("El identificador del usuario no es válido");
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            int idUsuarioEjecutor = ObtenerIdUsuarioActual();
+
+            if(idUsuarioEjecutor <= 0)
+            {
+                MostrarError("No fue posible identificar el usuario autenticado");
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                await _usuarioService.CambiarEstadoAsync(id, nuevoEstado, idUsuarioEjecutor);
+
+                string mensaje = nuevoEstado ? "El usuario fue activado correctamente" : "El usuario fue desactivado correctamente";
+
+                MostrarExito(mensaje);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                MostrarAdvertencia(ex.Message);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Ocurrió un error al cambiar el estado del usuario con Id {IdUsuario}", id);
+
+                MostrarError("No fue posible cambiar el estado del usuario.");
+
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        private int ObtenerIdUsuarioActual()
+        {
+            string? idUsuarioClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (int.TryParse(idUsuarioClaim, out int idUsuario))
+            {
+                return idUsuario;
+            }
+
+            return 0;
         }
 
         #endregion
