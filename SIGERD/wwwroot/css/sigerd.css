@@ -587,3 +587,19 @@ body {
         position: static;
         transform: none;
     }
+
+
+/* ================================
+   RESTABLECER PASSWORD
+================================ */
+.boton-restablecer {
+    display: flex;
+    margin: 10px auto;
+    padding: 10px 0;
+    width: 80%;
+    background: yellow;
+    border: none;
+    font-family: Arial;
+    justify-content: center;
+    border: 1px solid #ffe65d;
+}

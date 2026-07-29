@@ -240,5 +240,50 @@ namespace SIGERD.Services.Seguridad
             _usuarioRepository.Actualizar(usuarioActual);
             await _usuarioRepository.GuardarAsync();
         }
+
+
+        public async Task RestablecerClaveAsync(int idUsuario, string nuevaClave, int idUsuarioEjecutor)
+        {
+            if (idUsuario <= 0)
+            {
+                throw new InvalidOperationException("El identificador del usuario no es válido");
+            }
+
+            if (idUsuarioEjecutor <= 0)
+            {
+                throw new InvalidOperationException("No fue posible identificar el usuario que realiza la operación");
+            }
+
+            if (idUsuario == idUsuarioEjecutor)
+            {
+                throw new InvalidOperationException("No puedes restablecer tu propia contraseña desde esta pantalla.");
+            }
+
+            if (string.IsNullOrWhiteSpace(nuevaClave))
+            {
+                throw new InvalidOperationException("La contraseña es obligatoria.");
+            }
+
+            if (nuevaClave.Length < 8)
+            {
+                throw new InvalidOperationException("La nueva contraseña debe tener al menos 8 carácteres");
+            }
+
+            var usuarioActual = await _usuarioRepository.ObtenerPorIdAsync(idUsuario);
+
+            if (usuarioActual is null)
+            {
+                throw new InvalidOperationException("El usuario solicitado no existe");
+            }
+
+            usuarioActual.claveHash = _passwordHasher.HashPassword(usuarioActual, nuevaClave);
+
+            usuarioActual.debeCambiarClave = true;
+            usuarioActual.fechaUltimoCambioClave = DateTime.UtcNow;
+            usuarioActual.versionSeguridad = Guid.NewGuid();
+
+            _usuarioRepository.Actualizar(usuarioActual);
+            await _usuarioRepository.GuardarAsync();
+        }
     }
 }

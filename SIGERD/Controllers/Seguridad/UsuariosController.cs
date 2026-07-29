@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using SIGERD.Controllers;
 using SIGERD.Interfaces.IServices.Seguridad;
 using SIGERD.Interfaces.IServices.Common;
 using SIGERD.Mappings;
@@ -31,6 +29,107 @@ namespace SIGERD.Controllers.Seguridad
             _usuarioService = usuarioService;
             _selectListService = selectListService;
             _logger = logger;
+        }
+
+        #endregion
+
+        #region Restablecer contraseña
+        /// <summary>
+        /// Muestra el formulario para restablecer la contraseña de un usuario.
+        /// </summary>
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(int id)
+        {
+            if (id <= 0)
+            {
+                MostrarAdvertencia("El identificador del usuario no es válido.");
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                var usuario = await _usuarioService.ObtenerPorIdAsync(id);
+
+                if(usuario is null)
+                {
+                    MostrarAdvertencia("El usuario solicitado no existe o ya no está disponible.");
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var model = UsuarioMapper.ToResetPasswordViewModel(usuario);
+
+                return View(model);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Ocurrió un error al cargar el formulario para restablecer la contraseña del usaurio con Id {IdUsuario}", 
+                    id
+                  );
+
+                MostrarError("No fue posible cargar el formulario para restablecer la contraseña.");
+
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(UsuarioResetPasswordViewModel model)
+        {
+            if (model.idUsuario <= 0)
+            {
+                MostrarAdvertencia("El identificador del usuario no es válido.");
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            int idUsuarioEjecutor = ObtenerIdUsuarioActual();
+
+            if (idUsuarioEjecutor <= 0)
+            {
+                MostrarError("No fue posible identificar al usuario autenticado.");
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                await _usuarioService.RestablecerClaveAsync(model.idUsuario, model.NuevaClave, idUsuarioEjecutor);
+
+                MostrarExito("La contraseña fue restablecida correctamente. El usuario deberá cambiarla al iniciar sesión.");
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Ocurrió un error al restablecer la contraseña del usuario con Id {IdUsuario}.",
+                    model.idUsuario
+                 );
+
+                MostrarError("No fue posible restablecer la contraseña del usuario.");
+
+                return View(model);
+            }
         }
 
         #endregion

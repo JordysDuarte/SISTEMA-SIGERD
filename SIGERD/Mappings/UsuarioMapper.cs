@@ -7,6 +7,16 @@ namespace SIGERD.Mappings
     {
         #region Entity -> ViewModel
 
+        public static UsuarioResetPasswordViewModel ToResetPasswordViewModel(Usuario usuario)
+        {
+            return new UsuarioResetPasswordViewModel
+            {
+                idUsuario = usuario.idUsuario,
+                NombreCompleto = usuario.nombreCompleto,
+                NombreUsuario = usuario.nombreUsuario
+            };
+        }
+
         public static UsuarioListViewModel ToListViewModel(Usuario usuario)
         {
             return new UsuarioListViewModel
