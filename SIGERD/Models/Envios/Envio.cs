@@ -13,7 +13,9 @@ namespace SIGERD.Models.Envios
 
         public DateTime fechaEnvio { get; set; }
 
-        public int idDelegacionEnvio { get; set; }
+        public int idDelegacionOrigenEnvio { get; set; }
+
+        public int idDelegacionDestinoEnvio { get; set; }
 
         public int idUsuarioEnvio { get; set; }
 
@@ -21,7 +23,9 @@ namespace SIGERD.Models.Envios
 
         public string? observaciones { get; set; } = null;
 
-        public Delegacion? Delegacion { get; set; }
+        public Delegacion? DelegacionOrigen { get; set; }
+
+        public Delegacion? DelegacionDestino { get; set; }
 
         public Usuario? Usuario { get; set; }
 

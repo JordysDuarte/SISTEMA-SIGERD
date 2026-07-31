@@ -27,9 +27,14 @@ namespace SIGERD.Configurations.Envios
                 .HasForeignKey(e => e.idEstadoEnvioEnvio)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(e => e.Delegacion)
-                .WithMany(d => d.Envios)
-                .HasForeignKey(e => e.idDelegacionEnvio)
+            entity.HasOne(e => e.DelegacionOrigen)
+                .WithMany(d => d.EnviosOrigen)
+                .HasForeignKey(e => e.idDelegacionOrigenEnvio)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.DelegacionDestino)
+                .WithMany(d => d.EnviosDestino)
+                .HasForeignKey(e => e.idDelegacionDestinoEnvio)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.Usuario)
