@@ -9,7 +9,7 @@ namespace SIGERD.Models.Envios
     {
         public int idEnvio { get; set; }
 
-        public string codigoEnvio { get; set; }
+        public string? codigoEnvio { get; set; }
 
         public DateTime fechaEnvio { get; set; }
 
@@ -21,11 +21,11 @@ namespace SIGERD.Models.Envios
 
         public string? observaciones { get; set; } = null;
 
-        public Delegacion Delegacion { get; set; }
+        public Delegacion? Delegacion { get; set; }
 
-        public Usuario Usuario { get; set; }
+        public Usuario? Usuario { get; set; }
 
-        public EstadoEnvio EstadoEnvio { get; set; }
+        public EstadoEnvio? EstadoEnvio { get; set; }
 
         public ICollection<DetalleEnvio> DetallesEnvio { get; set; } = new List<DetalleEnvio>();
 
