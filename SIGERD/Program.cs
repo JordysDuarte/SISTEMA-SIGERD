@@ -18,6 +18,10 @@ using SIGERD.Repositories.Ubicacion;
 using SIGERD.Services.Ubicacion;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using SIGERD.Data.Seed;
+using SIGERD.Interfaces.IRespositories.Envios;
+using SIGERD.Interfaces.IServices.Envios;
+using SIGERD.Services.Envios;
+using SIGERD.Repositories.Envios;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +69,9 @@ builder.Services.AddAuthorization();
 
 
 builder.Services.AddScoped<DataSeeder>();
+
+builder.Services.AddScoped<IEnvioRepository, EnvioRepository>();
+builder.Services.AddScoped<IEnvioService, EnvioService>();
 
 
 var app = builder.Build();
