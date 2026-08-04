@@ -15,5 +15,11 @@ namespace SIGERD.Interfaces.IRespositories.Envios
         Task GuardarAsync();
 
         Task<int> ObtenerConsecutivoDiarioAsync(DateTime fecha);
+
+        Task<int?> ObtenerIdEstadoInicialAsync();
+
+        Task<bool> ExisteDelegacionAsync(int idDelegacion);
+
+        Task<bool> ExisteArticuloAsync(int idArticulo);
     }
 }

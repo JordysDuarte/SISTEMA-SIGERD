@@ -8,7 +8,7 @@ namespace SIGERD.Configurations.Envios
     {
         public void Configure(EntityTypeBuilder<EstadoEnvio> builder)
         {
-            builder.ToTable("EstadosEnvio", "Envios");
+            builder.ToTable("EstadoEnvios", "Envios");
             builder.HasKey(e => e.idEstadoEnvio);
             builder.Property(e => e.nombreEstadoEnvio)
                 .IsRequired()

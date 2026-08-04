@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using SIGERD.Data;
 using SIGERD.Interfaces.IRespositories.Envios;
 using SIGERD.Models.Envios;
@@ -65,6 +66,41 @@ namespace SIGERD.Repositories.Envios
                         e.fechaEnvio < finDia);
 
             return totalEnviosDelDia + 1;
+        }
+
+
+        public async Task<int?> ObtenerIdEstadoInicialAsync()
+        {
+            var estado = await _context.EstadoEnvios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e =>
+                    e.nombreEstadoEnvio != null &&
+                    e.nombreEstadoEnvio.Trim().ToLower() == "pendiente"
+                );
+
+            if (estado is null)
+            {
+                estado = await _context.EstadoEnvios
+                    .AsNoTracking()
+                    .OrderBy(e => e.idEstadoEnvio)
+                    .FirstOrDefaultAsync();
+            }
+
+            return estado?.idEstadoEnvio;
+        }
+
+
+        public async Task<bool> ExisteDelegacionAsync(int idDelegacion)
+        {
+            return await _context.Delegaciones
+                .AnyAsync(d => d.idDelegacion == idDelegacion);
+        }
+
+
+        public async Task<bool> ExisteArticuloAsync(int idArticulo)
+        {
+            return await _context.Articulos
+                .AnyAsync(a => a.idArticulo == idArticulo);
         }
 
     }

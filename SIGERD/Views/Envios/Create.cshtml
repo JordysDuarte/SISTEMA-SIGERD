@@ -1,0 +1,106 @@
+﻿@model SIGERD.ViewModels.Envios.Envios.EnvioCreateViewModel
+
+@{
+    ViewData["Title"] = "Nuevo Envío";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Nuevo Envío</h2>
+        <p class="text-muted mb-0">Registra un envío institucional entre delegaciones.</p>
+    </div>
+
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Volver
+    </a>
+</div>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Datos generales</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="IdDelegacionOrigen" class="form-label"></label>
+                    <select asp-for="IdDelegacionOrigen" asp-items="Model.Delegaciones" class="form-select">
+                        <option value="">Seleccione una delegación</option>
+                    </select>
+                    <span asp-validation-for="IdDelegacionOrigen" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IdDelegacionDestino" class="form-label"></label>
+                    <select asp-for="IdDelegacionDestino" asp-items="Model.Delegaciones" class="form-select">
+                        <option value="">Seleccione una delegación</option>
+                    </select>
+                    <span asp-validation-for="IdDelegacionDestino" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Observaciones" class="form-label"></label>
+                    <textarea asp-for="Observaciones" rows="3" class="form-control" placeholder="Escriba observaciones generales del envío..."></textarea>
+                    <span asp-validation-for="Observaciones" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Artículos del envío</h5>
+            <small class="text-muted">Puede dejar filas sin usar en blanco.</small>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 70%;">Artículo</th>
+                            <th style="width: 30%;">Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Detalles.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <select asp-for="Detalles[i].IdArticulo" asp-items="Model.Detalles[i].Articulos" class="form-select">
+                                        <option value="">Seleccione un artículo</option>
+                                    </select>
+                                    <span asp-validation-for="Detalles[i].IdArticulo" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input asp-for="Detalles[i].Cantidad" class="form-control" placeholder="Cantidad" />
+                                    <span asp-validation-for="Detalles[i].Cantidad" class="text-danger"></span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-light border mt-3 mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Recomendación: no repitas el mismo artículo en varias filas dentro del mismo envío.
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save me-2"></i>Registrar envío
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

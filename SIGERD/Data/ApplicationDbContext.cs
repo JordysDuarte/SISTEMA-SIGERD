@@ -28,7 +28,7 @@ namespace SIGERD.Data
         public DbSet<Articulo> Articulos { get; set; }
 
         // DbSets para el Esquema Envios
-        public DbSet<EstadoEnvio> EstadosEnvio { get; set; }
+        public DbSet<EstadoEnvio> EstadoEnvios { get; set; }
         public DbSet<Envio> Envios { get; set; }
         public DbSet<DetalleEnvio> DetalleEnvio { get; set; }
 

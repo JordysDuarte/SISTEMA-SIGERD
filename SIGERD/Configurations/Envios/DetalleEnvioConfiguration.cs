@@ -10,7 +10,7 @@ namespace SIGERD.Configurations.Envios
         {
             entity.ToTable("DetalleEnvio", "Envios");
 
-            entity.HasKey(d => d.idDetalleEnvio);
+            entity.HasKey(d => d.idDetalle);
 
             entity.Property(d => d.cantidad)
                 .IsRequired();

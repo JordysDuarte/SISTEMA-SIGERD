@@ -60,7 +60,7 @@ namespace SIGERD.Services.Common
 
         public async Task<IEnumerable<SelectListItem>> ObtenerEstadosEnvioAsync()
         {
-            return await _context.EstadosEnvio
+            return await _context.EstadoEnvios
                 .OrderBy(e => e.nombreEstadoEnvio)
                 .Select(e => new SelectListItem
                 {

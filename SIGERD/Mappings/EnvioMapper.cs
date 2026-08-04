@@ -26,7 +26,7 @@ namespace SIGERD.Mappings
         {
             return new EnvioDetailsViewModel
             {
-                IdeEnvio = envio.idEnvio,
+                IdEnvio = envio.idEnvio,
                 CodigoEnvio = envio.codigoEnvio ?? string.Empty,
                 FechaEnvio = envio.fechaEnvio,
                 DelegacionOrigen = envio.DelegacionOrigen?.nombreDelegacion ?? "Sin origen",
@@ -37,7 +37,7 @@ namespace SIGERD.Mappings
                 Detalles = envio.DetallesEnvio
                     .Select(detalle => new DetalleEnvioDetailsViewModel
                     {
-                        IdDetalleEnvio = detalle.idDetalleEnvio,
+                        IdDetalleEnvio = detalle.idDetalle,
                         Articulo = detalle.Articulo?.nombreArticulo ?? "Sin artículo",
                         Cantidad = detalle.cantidad
                     })
@@ -48,25 +48,24 @@ namespace SIGERD.Mappings
 
         public static Envio ToEntity(
             EnvioCreateViewModel model,
-            int idUsuarioEnvio,
-            int idEstadoInicial,
-            string codigoEnvio)
+            int idUsuarioEnvio)
         {
             return new Envio
             {
-                codigoEnvio = codigoEnvio,
-                fechaEnvio = DateTime.Now,
                 idDelegacionOrigenEnvio = model.IdDelegacionOrigen,
                 idDelegacionDestinoEnvio = model.IdDelegacionDestino,
                 idUsuarioEnvio = idUsuarioEnvio,
-                idEstadoEnvioEnvio = idEstadoInicial,
                 observaciones = model.Observaciones?.Trim(),
                 DetallesEnvio = model.Detalles
-                    .Where(d => d.IdArticulo > 0 && d.Cantidad > 0)
+                    .Where(d => 
+                        d.IdArticulo.HasValue &&
+                        d.IdArticulo.Value > 0 &&
+                        d.Cantidad.HasValue &&
+                        d.Cantidad.Value > 0)
                     .Select(d => new DetalleEnvio
                     {
-                        idArticuloDetalleEnvio = d.IdArticulo,
-                        cantidad = d.Cantidad,
+                        idArticuloDetalleEnvio = d.IdArticulo!.Value,
+                        cantidad = d.Cantidad!.Value
                     })
                     .ToList()
             };

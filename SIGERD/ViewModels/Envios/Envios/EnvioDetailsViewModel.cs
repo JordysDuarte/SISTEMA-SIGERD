@@ -4,7 +4,7 @@ namespace SIGERD.ViewModels.Envios.Envios
 {
     public class EnvioDetailsViewModel
     {
-        public int IdeEnvio { get; set; }
+        public int IdEnvio { get; set; }
 
         [Display(Name = "Código")]
         public string CodigoEnvio { get; set; } = string.Empty;

@@ -8,6 +8,6 @@ namespace SIGERD.Interfaces.IServices.Envios
 
         Task<Envio?> ObtenerPorIdAsync(int idEnvio);
 
-        Task CrearAsync(Envio envio);
+        Task<int> CrearAsync(Envio envio);
     }
 }
