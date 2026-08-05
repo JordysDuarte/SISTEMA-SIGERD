@@ -12,8 +12,23 @@ namespace SIGERD.Configurations.Envios
 
             entity.HasKey(d => d.idDetalle);
 
+            entity.Property(d => d.idDetalle)
+                .HasColumnName("idDetalle");
+
+            entity.Property(d => d.idEnvioDetalleEnvio)
+                .HasColumnName("idEnvioDetalleEnvio");
+
+            entity.Property(d => d.idArticuloDetalleEnvio)
+                .HasColumnName("idArticuloDetalleEnvio");
+
             entity.Property(d => d.cantidad)
+                .HasColumnName("cantidad")
                 .IsRequired();
+
+            entity.Property(d => d.observacionesDetalleEnvio)
+                .HasColumnName("observacionesDetalleEnvio")
+                .HasMaxLength(500)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Envio)
                 .WithMany(e => e.DetallesEnvio)

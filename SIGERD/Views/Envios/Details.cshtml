@@ -70,6 +70,7 @@
                                 <th>#</th>
                                 <th>Artículo</th>
                                 <th>Cantidad</th>
+                                <th>Descripción</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -83,6 +84,11 @@
                                         <td>@contador</td>
                                         <td>@detalle.Articulo</td>
                                         <td>@detalle.Cantidad</td>
+                                        <td>
+                                            @(string.IsNullOrWhiteSpace(detalle.ObservacionesDetalles)
+                                                ? "Sin descripción"
+                                                : detalle.ObservacionesDetalles)
+                                        </td>
                                     </tr>
 
                                     contador++;
@@ -91,7 +97,7 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="3" class="text-center text-muted py-4">
+                                    <td colspan="4" class="text-center text-muted py-4">
                                         No hay artículos registrados en este envío.
                                     </td>
                                 </tr>

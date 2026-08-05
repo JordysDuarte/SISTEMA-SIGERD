@@ -39,7 +39,8 @@ namespace SIGERD.Mappings
                     {
                         IdDetalleEnvio = detalle.idDetalle,
                         Articulo = detalle.Articulo?.nombreArticulo ?? "Sin artículo",
-                        Cantidad = detalle.cantidad
+                        Cantidad = detalle.cantidad,
+                        ObservacionesDetalles = detalle.observacionesDetalleEnvio
                     })
                     .ToList()
             };
@@ -57,7 +58,7 @@ namespace SIGERD.Mappings
                 idUsuarioEnvio = idUsuarioEnvio,
                 observaciones = model.Observaciones?.Trim(),
                 DetallesEnvio = model.Detalles
-                    .Where(d => 
+                    .Where(d =>
                         d.IdArticulo.HasValue &&
                         d.IdArticulo.Value > 0 &&
                         d.Cantidad.HasValue &&
@@ -65,7 +66,8 @@ namespace SIGERD.Mappings
                     .Select(d => new DetalleEnvio
                     {
                         idArticuloDetalleEnvio = d.IdArticulo!.Value,
-                        cantidad = d.Cantidad!.Value
+                        cantidad = d.Cantidad!.Value,
+                        observacionesDetalleEnvio = d.ObservacionesDetalle?.Trim()
                     })
                     .ToList()
             };

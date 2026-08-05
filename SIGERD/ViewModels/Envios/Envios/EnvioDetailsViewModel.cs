@@ -39,5 +39,8 @@ namespace SIGERD.ViewModels.Envios.Envios
 
         [Display(Name = "Cantidad")]
         public int Cantidad { get; set; }
+
+        [Display(Name = "Descripción")]
+        public string? ObservacionesDetalles { get; set; }
     }
 }

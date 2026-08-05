@@ -13,6 +13,10 @@ namespace SIGERD.ViewModels.Envios.Envios
         [Display(Name = "Cantidad")]
         public int? Cantidad { get; set; }
 
+        [StringLength(500, ErrorMessage = "La descripción no debe superar los 500 carácteres.")]
+        [Display(Name = "Descripción")]
+        public string? ObservacionesDetalle { get; set; }
+
         public IEnumerable<SelectListItem> Articulos { get; set; } = new List<SelectListItem>();
     }
 }

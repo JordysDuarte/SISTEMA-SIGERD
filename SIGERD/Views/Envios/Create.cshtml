@@ -15,7 +15,7 @@
     </a>
 </div>
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" id="formCrearEnvio">
     @Html.AntiForgeryToken()
 
     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -24,6 +24,7 @@
         <div class="card-header bg-white">
             <h5 class="mb-0">Datos generales</h5>
         </div>
+
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-6">
@@ -44,7 +45,10 @@
 
                 <div class="col-12">
                     <label asp-for="Observaciones" class="form-label"></label>
-                    <textarea asp-for="Observaciones" rows="3" class="form-control" placeholder="Escriba observaciones generales del envío..."></textarea>
+                    <textarea asp-for="Observaciones"
+                              rows="3"
+                              class="form-control"
+                              placeholder="Escriba observaciones generales del envío..."></textarea>
                     <span asp-validation-for="Observaciones" class="text-danger"></span>
                 </div>
             </div>
@@ -52,32 +56,92 @@
     </div>
 
     <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Artículos del envío</h5>
-            <small class="text-muted">Puede dejar filas sin usar en blanco.</small>
+        <div class="card-header bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+            <div>
+                <h5 class="mb-0">Detalles del envío</h5>
+                <small class="text-muted">Agrega todos los artículos, documentos o paquetes incluidos en el envío.</small>
+            </div>
+
+            <button type="button" class="btn btn-sm btn-outline-primary" id="btnAgregarDetalle">
+                <i class="bi bi-plus-circle me-1"></i>
+                Agregar línea
+            </button>
         </div>
+
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered align-middle">
+                <table class="table table-bordered align-middle mb-0" id="tablaDetallesEnvio">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 70%;">Artículo</th>
-                            <th style="width: 30%;">Cantidad</th>
+                            <th style="width: 35%;">Artículo / documento</th>
+                            <th style="width: 15%;">Cantidad</th>
+                            <th style="width: 40%;">Descripción</th>
+                            <th style="width: 10%;" class="text-center">Acción</th>
                         </tr>
                     </thead>
-                    <tbody>
+
+                    <tbody id="contenedorDetalles">
                         @for (int i = 0; i < Model.Detalles.Count; i++)
                         {
-                            <tr>
+                            <tr class="detalle-row">
                                 <td>
-                                    <select asp-for="Detalles[i].IdArticulo" asp-items="Model.Detalles[i].Articulos" class="form-select">
+                                    <select name="Detalles[@i].IdArticulo"
+                                            id="Detalles_@(i)__IdArticulo"
+                                            class="form-select detalle-articulo">
+
                                         <option value="">Seleccione un artículo</option>
+
+                                        @foreach (var articulo in Model.Articulos)
+                                        {
+                                            if (Model.Detalles[i].IdArticulo?.ToString() == articulo.Value)
+                                            {
+                                                <option value="@articulo.Value" selected>@articulo.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@articulo.Value">@articulo.Text</option>
+                                            }
+                                        }
                                     </select>
-                                    <span asp-validation-for="Detalles[i].IdArticulo" class="text-danger"></span>
+
+                                    <span class="text-danger field-validation-valid"
+                                          data-valmsg-for="Detalles[@i].IdArticulo"
+                                          data-valmsg-replace="true"></span>
                                 </td>
+
                                 <td>
-                                    <input asp-for="Detalles[i].Cantidad" class="form-control" placeholder="Cantidad" />
-                                    <span asp-validation-for="Detalles[i].Cantidad" class="text-danger"></span>
+                                    <input name="Detalles[@i].Cantidad"
+                                           id="Detalles_@(i)__Cantidad"
+                                           value="@Model.Detalles[i].Cantidad"
+                                           class="form-control detalle-cantidad"
+                                           type="number"
+                                           min="1"
+                                           placeholder="Cantidad" />
+
+                                    <span class="text-danger field-validation-valid"
+                                          data-valmsg-for="Detalles[@i].Cantidad"
+                                          data-valmsg-replace="true"></span>
+                                </td>
+
+                                <td>
+                                    <textarea name="Detalles[@i].ObservacionesDetalle"
+                                              id="Detalles_(@i)__ObservacionesDetalle"
+                                              class="form-control detalle-observacion"
+                                              rows="2"
+                                              maxlength="500"
+                                              placeholder="Detalle específico de esta línea...">@Model.Detalles[i].ObservacionesDetalle</textarea>
+
+                                    <span class="text-danger field-validation-valid"
+                                          data-valmsg-for="Detalles[@i].ObservacionesDetalle"
+                                          data-valmsg-replace="true"></span>
+                                </td>
+
+                                <td class="text-center">
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger btnEliminarDetalle"
+                                            title="Quitar línea">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                         }
@@ -87,7 +151,7 @@
 
             <div class="alert alert-light border mt-3 mb-0">
                 <i class="bi bi-info-circle me-2"></i>
-                Recomendación: no repitas el mismo artículo en varias filas dentro del mismo envío.
+                Puedes agregar tantas líneas como necesites. Cada línea debe tener artículo y cantidad.
             </div>
         </div>
     </div>
@@ -96,11 +160,169 @@
         <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 
         <button type="submit" class="btn btn-primary">
-            <i class="bi bi-save me-2"></i>Registrar envío
+            <i class="bi bi-save me-2"></i>
+            Registrar envío
         </button>
     </div>
 </form>
 
+<template id="detalleTemplate">
+    <tr class="detalle-row">
+        <td>
+            <select name="Detalles[__index__].IdArticulo"
+                    id="Detalles___index____IdArticulo"
+                    class="form-select detalle-articulo">
+
+                <option value="">Seleccione un artículo</option>
+
+                @foreach (var articulo in Model.Articulos)
+                {
+                    <option value="@articulo.Value">@articulo.Text</option>
+                }
+            </select>
+
+            <span class="text-danger field-validation-valid"
+                  data-valmsg-for="Detalles[__index__].IdArticulo"
+                  data-valmsg-replace="true"></span>
+        </td>
+
+        <td>
+            <input name="Detalles[__index__].Cantidad"
+                   id="Detalles___index____Cantidad"
+                   class="form-control detalle-cantidad"
+                   type="number"
+                   min="1"
+                   placeholder="Cantidad" />
+
+            <span class="text-danger field-validation-valid"
+                  data-valmsg-for="Detalles[__index__].Cantidad"
+                  data-valmsg-replace="true"></span>
+        </td>
+
+        <td>
+            <textarea name="Detalles[__index__].ObservacionesDetalle"
+                      id="Detalles___index____ObservacionesDetalle"
+                      class="form-control detalle-observacion"
+                      rows="2"
+                      maxlength="500"
+                      placeholder="Detalle específico de esta línea..."></textarea>
+
+            <span class="text-danger field-validation-valid"
+                  data-valmsg-for="Detalles[__index__].ObservacionesDetalle"
+                  data-valmsg-replace="true"></span>
+        </td>
+
+        <td class="text-center">
+            <button type="button"
+                    class="btn btn-sm btn-outline-danger btnEliminarDetalle"
+                    title="Quitar línea">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const contenedorDetalles = document.getElementById("contenedorDetalles");
+            const btnAgregarDetalle = document.getElementById("btnAgregarDetalle");
+            const detalleTemplate = document.getElementById("detalleTemplate");
+            const formCrearEnvio = document.getElementById("formCrearEnvio");
+
+            function obtenerFilas() {
+                return contenedorDetalles.querySelectorAll(".detalle-row");
+            }
+
+            function reindexarFilas() {
+                const filas = obtenerFilas();
+
+                filas.forEach(function(fila, index) {
+                    const articulo = fila.querySelector(".detalle-articulo");
+                    const cantidad = fila.querySelector(".detalle-cantidad");
+                    const observacion = fila.querySelector(".detalle-observacion");
+
+                    const spanArticulo = fila.querySelector("[data-valmsg-for$='.IdArticulo']");
+                    const spanCantidad = fila.querySelector("[data-valmsg-for$='.Cantidad']");
+                    const spanObservacion = fila.querySelector("[data-valmsg-for$='.ObservacionesDetalle']");
+
+                    if (articulo) {
+                        articulo.name = `Detalles[${index}].IdArticulo`;
+                        articulo.id = `Detalles_${index}__IdArticulo`;
+                    }
+
+                    if (cantidad) {
+                        cantidad.name = `Detalles[${index}].Cantidad`;
+                        cantidad.id = `Detalles_${index}__Cantidad`;
+                    }
+
+                    if (observacion) {
+                        observacion.name = `Detalles[${index}].ObservacionesDetalle`;
+                        observacion.id = `Detalles_${index}__ObservacionesDetalle`;
+                    }
+
+                    if (spanArticulo) {
+                        spanArticulo.setAttribute("data-valmsg-for", `Detalles[${index}].IdArticulo`);
+                    }
+
+                    if (spanCantidad) {
+                        spanCantidad.setAttribute("data-valmsg-for", `Detalles[${index}].Cantidad`);
+                    }
+
+                    if (spanObservacion) {
+                        spanObservacion.setAttribute("data-valmsg-for", `Detalles[${index}].ObservacionesDetalle`);
+                    }
+                });
+            }
+
+            function agregarFila() {
+                const index = obtenerFilas().length;
+                const html = detalleTemplate.innerHTML.replaceAll("__index__", index);
+
+                contenedorDetalles.insertAdjacentHTML("beforeend", html);
+                reindexarFilas();
+            }
+
+            function eliminarFila(boton) {
+                const filas = obtenerFilas();
+
+                if (filas.length <= 1) {
+                    const fila = boton.closest(".detalle-row");
+
+                    if (fila) {
+                        fila.querySelectorAll("select, input, textarea").forEach(function(control) {
+                            control.value = "";
+                        });
+                    }
+
+                    return;
+                }
+
+                boton.closest(".detalle-row").remove();
+                reindexarFilas();
+            }
+
+            btnAgregarDetalle.addEventListener("click", function() {
+                agregarFila();
+            });
+
+            contenedorDetalles.addEventListener("click", function(event) {
+                const botonEliminar = event.target.closest(".btnEliminarDetalle");
+
+                if (botonEliminar) {
+                    eliminarFila(botonEliminar);
+                }
+            });
+
+            formCrearEnvio.addEventListener("submit", function() {
+                reindexarFilas();
+            });
+
+            if (obtenerFilas().length === 0) {
+                agregarFila();
+            }
+        });
+    </script>
 }

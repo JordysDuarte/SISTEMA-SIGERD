@@ -5,6 +5,7 @@ using SIGERD.Interfaces.IServices.Envios;
 using SIGERD.Mappings;
 using System.Security.Claims;
 using SIGERD.ViewModels.Envios.Envios;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace SIGERD.Controllers.Envios
 {
@@ -186,7 +187,10 @@ namespace SIGERD.Controllers.Envios
             model.Detalles ??= new List<DetalleEnvioCreateViewModel>();
 
             model.Detalles = model.Detalles
-                .Where(d => d.IdArticulo.HasValue || d.Cantidad.HasValue)
+                .Where(d => 
+                    d.IdArticulo.HasValue || 
+                    d.Cantidad.HasValue ||
+                    !string.IsNullOrWhiteSpace(d.ObservacionesDetalle))
                 .ToList();
         }
 
@@ -211,25 +215,31 @@ namespace SIGERD.Controllers.Envios
 
                 bool tieneArticulo = detalle.IdArticulo.HasValue && detalle.IdArticulo.Value > 0;
                 bool tieneCantidad = detalle.Cantidad.HasValue && detalle.Cantidad.Value > 0;
+                bool tieneDescripcion = !string.IsNullOrWhiteSpace(detalle.ObservacionesDetalle);
 
                 if (tieneArticulo && !tieneCantidad)
                 {
                     ModelState.AddModelError($"Detalles[{i}].Cantidad", "Debe ingresar una cantidad válida.");
                 }
 
-                if (!tieneArticulo && (detalle.Cantidad.HasValue && detalle.Cantidad.Value > 0))
+                if (!tieneArticulo && tieneCantidad)
                 {
                     ModelState.AddModelError($"Detalles[{i}].IdArticulo", "Debe seleccionar un artículo.");
                 }
 
-                if (detalle.Cantidad.HasValue && detalle.Cantidad.Value <= 0)
+                if (!tieneArticulo && tieneDescripcion)
                 {
-                    ModelState.AddModelError($"Detalles[{i}].Cantidad", "La cantidad debe ser mayor que cero.");
+                    ModelState.AddModelError($"Detalles[{i}].IdArticulo", "Debe seleccionar un artículo.");
                 }
 
-                if (detalle.IdArticulo.HasValue && detalle.IdArticulo.Value <= 0)
+               if (tieneArticulo && detalle.Cantidad.HasValue && detalle.Cantidad.Value <= 0)
                 {
-                    ModelState.AddModelError($"Detalles[{i}].IdArticulo", "Debe seleccionar un artículo válido.");
+                    ModelState.AddModelError($"Detalles[{i}].Cantidad", "La cantidad debe ser mayor a cero.");
+                }
+
+               if (detalle.IdArticulo.HasValue && detalle.IdArticulo.Value <= 0)
+                {
+                    ModelState.AddModelError($"Detalles[{i}].Cantidad", "La cantidad debe ser mayor que cero.");
                 }
             }
 
@@ -251,6 +261,8 @@ namespace SIGERD.Controllers.Envios
             model.Delegaciones = await _selectListService.ObtenerDelegacionesAsync();
 
             var articulos = await _selectListService.ObtenerArticulosAsync();
+
+            model.Articulos = articulos;
 
             model.Detalles ??= new List<DetalleEnvioCreateViewModel>();
 
