@@ -22,6 +22,10 @@ using SIGERD.Interfaces.IRespositories.Envios;
 using SIGERD.Interfaces.IServices.Envios;
 using SIGERD.Services.Envios;
 using SIGERD.Repositories.Envios;
+using SIGERD.Interfaces.IRespositories.Despachos;
+using SIGERD.Repositories.Despachos;
+using SIGERD.Interfaces.IServices.Despachos;
+using SIGERD.Services.Despachos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +76,9 @@ builder.Services.AddScoped<DataSeeder>();
 
 builder.Services.AddScoped<IEnvioRepository, EnvioRepository>();
 builder.Services.AddScoped<IEnvioService, EnvioService>();
+
+builder.Services.AddScoped<IDespachoRepository, DespachoRepository>();
+builder.Services.AddScoped<IDespachoService, DespachoService>();
 
 
 var app = builder.Build();

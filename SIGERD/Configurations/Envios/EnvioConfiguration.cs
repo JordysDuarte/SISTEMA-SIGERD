@@ -41,6 +41,18 @@ namespace SIGERD.Configurations.Envios
                 .WithMany(u => u.Envios)
                 .HasForeignKey(e => e.idUsuarioEnvio)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.fechaDespacho)
+                .HasColumnName("fechaDespacho")
+                .HasColumnType("datetime2");
+
+            entity.Property(e => e.idUsuarioDespacho)
+                .HasColumnName("idUsuarioDespacho");
+
+            entity.HasOne(e => e.UsuarioDespacho)
+                .WithMany()
+                .HasForeignKey(e => e.idUsuarioDespacho)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

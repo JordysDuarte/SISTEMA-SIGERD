@@ -49,6 +49,19 @@
                             @Model.EstadoEnvio
                         </span>
                     </dd>
+                    <dt class="col-sm-5">Fecha despacho</dt>
+                    <dd class="col-sm-7">
+                        @(Model.FechaDespacho.HasValue
+                            ? Model.FechaDespacho.Value.ToString("dd/MM/yyyy HH:mm")
+                            : "Pendiente de despacho")
+                    </dd>
+
+                    <dt class="col-sm-5">Usuario despacho</dt>
+                    <dd class="col-sm-7">
+                        @(string.IsNullOrWhiteSpace(Model.UsuarioDespacho)
+                            ? "Pendiente de despacho"
+                            : Model.UsuarioDespacho)
+                    </dd>
 
                     <dt class="col-sm-5">Observaciones</dt>
                     <dd class="col-sm-7">@(string.IsNullOrWhiteSpace(Model.Observaciones) ? "Sin observaciones" : Model.Observaciones)</dd>

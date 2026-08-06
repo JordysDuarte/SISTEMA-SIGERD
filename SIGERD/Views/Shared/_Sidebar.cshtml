@@ -27,6 +27,12 @@
         StringComparison.OrdinalIgnoreCase
     );
 
+    bool despachosActivo = string.Equals(
+    controladorActual,
+    "Despachos",
+    StringComparison.OrdinalIgnoreCase
+);
+
     bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
 }
 
@@ -126,9 +132,11 @@
         </li>
 
         <li>
-            <a href="#">
+            <a asp-controller="Despachos"
+               asp-action="Index"
+               class="@(despachosActivo ? "active" : "")">
 
-                <i class="bi bi-arrow-up-square-fill"></i>
+                <i class="bi bi-truck-front-fill"></i>
 
                 <span>Despachos</span>
 

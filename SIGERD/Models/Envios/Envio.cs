@@ -31,6 +31,12 @@ namespace SIGERD.Models.Envios
 
         public EstadoEnvio? EstadoEnvio { get; set; }
 
+        public DateTime? fechaDespacho { get; set; }
+
+        public int? idUsuarioDespacho { get; set; }
+
+        public Usuario? UsuarioDespacho { get; set; }
+
         public ICollection<DetalleEnvio> DetallesEnvio { get; set; } = new List<DetalleEnvio>();
 
         public ICollection<HistorialMovimiento> HistorialMovimientos { get; set; } = new List<HistorialMovimiento>();
