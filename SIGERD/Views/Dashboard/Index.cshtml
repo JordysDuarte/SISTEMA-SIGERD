@@ -1,20 +1,46 @@
 ﻿@model SIGERD.ViewModels.Dashboard.DashboardViewModel
+@using SIGERD.Constants.Envios
 
 @{
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-    <div>
-        <h2 class="mb-1">Dashboard</h2>
-        <p class="text-muted mb-0">
-            @Model.TituloContexto
-        </p>
-    </div>
+<div class="dashboard-hero mb-4">
+    <div class="dashboard-hero-content">
+        <div>
+            <span class="dashboard-eyebrow">
+                Panel principal
+            </span>
 
-    <div class="text-md-end">
-        <div class="fw-semibold">@Model.NombreUsuario</div>
-        <small class="text-muted">@Model.NombreDelegacion</small>
+            <h2 class="dashboard-title">
+                Bienvenido, @Model.NombreUsuario
+            </h2>
+
+            <p class="dashboard-subtitle">
+                @Model.TituloContexto
+            </p>
+
+            <div class="dashboard-context">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>@Model.NombreDelegacion</span>
+            </div>
+        </div>
+
+        <div class="dashboard-hero-actions">
+            <a asp-controller="Envios"
+               asp-action="Create"
+               class="btn btn-light dashboard-hero-button">
+                <i class="bi bi-plus-circle me-2"></i>
+                Nuevo envío
+            </a>
+
+            <a asp-controller="Envios"
+               asp-action="Index"
+               class="btn btn-outline-light dashboard-hero-button">
+                <i class="bi bi-send-fill me-2"></i>
+                Ver envíos
+            </a>
+        </div>
     </div>
 </div>
 
@@ -22,41 +48,57 @@
 {
     <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="text-muted small">Usuarios</div>
-                    <h3 class="mb-0">@Model.TotalUsuarios</h3>
-                    <small class="text-muted">Usuarios registrados</small>
+            <div class="dashboard-stat-card dashboard-stat-blue">
+                <div class="dashboard-stat-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+
+                <div>
+                    <span class="dashboard-stat-label">Usuarios</span>
+                    <h3>@Model.TotalUsuarios</h3>
+                    <p>Usuarios registrados</p>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="text-muted small">Artículos</div>
-                    <h3 class="mb-0">@Model.TotalArticulos</h3>
-                    <small class="text-muted">Artículos registrados</small>
+            <div class="dashboard-stat-card dashboard-stat-purple">
+                <div class="dashboard-stat-icon">
+                    <i class="bi bi-box-seam-fill"></i>
+                </div>
+
+                <div>
+                    <span class="dashboard-stat-label">Artículos</span>
+                    <h3>@Model.TotalArticulos</h3>
+                    <p>Catálogo disponible</p>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="text-muted small">Envíos</div>
-                    <h3 class="mb-0">@Model.TotalEnvios</h3>
-                    <small class="text-muted">Envíos totales</small>
+            <div class="dashboard-stat-card dashboard-stat-green">
+                <div class="dashboard-stat-icon">
+                    <i class="bi bi-send-fill"></i>
+                </div>
+
+                <div>
+                    <span class="dashboard-stat-label">Envíos</span>
+                    <h3>@Model.TotalEnvios</h3>
+                    <p>Envíos registrados</p>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="text-muted small">Recepciones</div>
-                    <h3 class="mb-0">@Model.TotalRecepciones</h3>
-                    <small class="text-muted">Recepciones registradas</small>
+            <div class="dashboard-stat-card dashboard-stat-orange">
+                <div class="dashboard-stat-icon">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+
+                <div>
+                    <span class="dashboard-stat-label">Recepciones</span>
+                    <h3>@Model.TotalRecepciones</h3>
+                    <p>Recepciones confirmadas</p>
                 </div>
             </div>
         </div>
@@ -66,160 +108,276 @@
 <div class="row g-3 mb-4">
     @if (!Model.EsSuperAdministrador)
     {
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="text-muted small">Enviados</div>
-                    <h3 class="mb-0">@Model.EnviosEnviados</h3>
-                    <small class="text-muted">Envíos desde mi delegación</small>
+        <div class="col-md-6 col-xl-3">
+            <a asp-controller="Envios"
+               asp-action="Index"
+               asp-route-tipoVista="@TiposVistaEnvio.Enviados"
+               class="dashboard-metric-card text-decoration-none">
+                <div class="dashboard-metric-icon metric-send">
+                    <i class="bi bi-box-arrow-up-right"></i>
                 </div>
-            </div>
+
+                <div>
+                    <span>Enviados</span>
+                    <h3>@Model.EnviosEnviados</h3>
+                    <p>Desde mi delegación</p>
+                </div>
+            </a>
         </div>
 
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="text-muted small">Destinados</div>
-                    <h3 class="mb-0">@Model.EnviosDestinados</h3>
-                    <small class="text-muted">Envíos hacia mi delegación</small>
+        <div class="col-md-6 col-xl-3">
+            <a asp-controller="Envios"
+               asp-action="Index"
+               asp-route-tipoVista="@TiposVistaEnvio.Destinados"
+               class="dashboard-metric-card text-decoration-none">
+                <div class="dashboard-metric-icon metric-inbox">
+                    <i class="bi bi-box-arrow-in-down-left"></i>
                 </div>
-            </div>
+
+                <div>
+                    <span>Destinados</span>
+                    <h3>@Model.EnviosDestinados</h3>
+                    <p>Hacia mi delegación</p>
+                </div>
+            </a>
         </div>
     }
 
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small">Pendientes de despacho</div>
-                <h3 class="mb-0">@Model.PendientesDespacho</h3>
-                <small class="text-muted">Envíos pendientes de salida</small>
+    <div class="col-md-6 col-xl-3">
+        <a asp-controller="Despachos"
+           asp-action="Index"
+           class="dashboard-metric-card text-decoration-none">
+            <div class="dashboard-metric-icon metric-pending">
+                <i class="bi bi-hourglass-split"></i>
             </div>
-        </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small">Pendientes de recepción</div>
-                <h3 class="mb-0">@Model.PendientesRecepcion</h3>
-                <small class="text-muted">Envíos pendientes de recibir</small>
+            <div>
+                <span>Pendientes despacho</span>
+                <h3>@Model.PendientesDespacho</h3>
+                <p>Esperando salida</p>
             </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small">En tránsito</div>
-                <h3 class="mb-0">@Model.EnviosEnTransito</h3>
-                <small class="text-muted">Envíos actualmente en tránsito</small>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small">Recibidos</div>
-                <h3 class="mb-0">@Model.EnviosRecibidos</h3>
-                <small class="text-muted">Envíos con recepción confirmada</small>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card shadow-sm border-0">
-    <div class="card-header bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
-        <div>
-            <h5 class="mb-0">Últimos envíos</h5>
-            <small class="text-muted">
-                @(Model.EsSuperAdministrador
-                    ? "Últimos movimientos registrados en el sistema."
-                    : "Últimos movimientos relacionados con tu delegación.")
-            </small>
-        </div>
-
-        <a asp-controller="Envios" asp-action="Index" class="btn btn-sm btn-outline-primary">
-            Ver envíos
         </a>
     </div>
 
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Código</th>
-                        <th>Fecha</th>
-                        <th>Origen</th>
-                        <th>Destino</th>
-                        <th>Estado</th>
-                        <th class="text-end">Acción</th>
-                    </tr>
-                </thead>
+    <div class="col-md-6 col-xl-3">
+        <a asp-controller="Recepciones"
+           asp-action="Index"
+           class="dashboard-metric-card text-decoration-none">
+            <div class="dashboard-metric-icon metric-receive">
+                <i class="bi bi-clipboard-check"></i>
+            </div>
 
-                <tbody>
-                    @if (Model.UltimosEnvios != null && Model.UltimosEnvios.Any())
-                    {
-                        foreach (var envio in Model.UltimosEnvios)
+            <div>
+                <span>Pendientes recepción</span>
+                <h3>@Model.PendientesRecepcion</h3>
+                <p>Esperando confirmación</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <a asp-controller="Envios"
+           asp-action="Index"
+           class="dashboard-metric-card text-decoration-none">
+            <div class="dashboard-metric-icon metric-transit">
+                <i class="bi bi-truck"></i>
+            </div>
+
+            <div>
+                <span>En tránsito</span>
+                <h3>@Model.EnviosEnTransito</h3>
+                <p>En proceso de traslado</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <a asp-controller="Envios"
+           asp-action="Index"
+           class="dashboard-metric-card text-decoration-none">
+            <div class="dashboard-metric-icon metric-success">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+
+            <div>
+                <span>Recibidos</span>
+                <h3>@Model.EnviosRecibidos</h3>
+                <p>Recepción completada</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="dashboard-panel">
+            <div class="dashboard-panel-header">
+                <div>
+                    <h5>Últimos envíos</h5>
+                    <p>
+                        @(Model.EsSuperAdministrador
+                            ? "Movimientos recientes registrados en el sistema."
+                            : "Movimientos recientes relacionados con tu delegación.")
+                    </p>
+                </div>
+
+                <a asp-controller="Envios"
+                   asp-action="Index"
+                   class="btn btn-sm btn-outline-primary">
+                    Ver todos
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table dashboard-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Fecha</th>
+                            <th>Ruta</th>
+                            <th>Estado</th>
+                            <th class="text-end">Acción</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.UltimosEnvios != null && Model.UltimosEnvios.Any())
                         {
-                            string estado = envio.EstadoEnvio?.Trim().ToLower() ?? string.Empty;
-
-                            string claseEstado = estado switch
+                            foreach (var envio in Model.UltimosEnvios)
                             {
-                                "pendiente" => "bg-warning",
-                                "en tránsito" => "bg-info text-dark",
-                                "en transito" => "bg-info text-dark",
-                                "recibido" => "bg-success",
-                                "cancelado" => "bg-danger",
-                                "extraviado" => "bg-warning text-dark",
-                                _ => "bg-secondary"
-                            };
+                                string estado = envio.EstadoEnvio?.Trim().ToLower() ?? string.Empty;
 
+                                string claseEstado = estado switch
+                                {
+                                    "pendiente" => "dashboard-badge badge-pending",
+                                    "en tránsito" => "dashboard-badge badge-transit",
+                                    "en transito" => "dashboard-badge badge-transit",
+                                    "recibido" => "dashboard-badge badge-success",
+                                    "cancelado" => "dashboard-badge badge-danger",
+                                    "extraviado" => "dashboard-badge badge-warning",
+                                    _ => "dashboard-badge badge-default"
+                                };
+
+                                <tr>
+                                    <td>
+                                        <strong>@envio.CodigoEnvio</strong>
+                                    </td>
+
+                                    <td>
+                                        <span class="dashboard-date">
+                                            @envio.FechaEnvio.ToString("dd/MM/yyyy")
+                                        </span>
+                                        <small>
+                                            @envio.FechaEnvio.ToString("HH:mm")
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        <div class="dashboard-route">
+                                            <span>@envio.DelegacionOrigen</span>
+                                            <i class="bi bi-arrow-right"></i>
+                                            <span>@envio.DelegacionDestino</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="@claseEstado">
+                                            @envio.EstadoEnvio
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end">
+                                        <a asp-controller="Envios"
+                                           asp-action="Details"
+                                           asp-route-id="@envio.IdEnvio"
+                                           class="btn btn-sm btn-light dashboard-action-button"
+                                           title="Ver detalle">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
                             <tr>
-                                <td>
-                                    <strong>@envio.CodigoEnvio</strong>
-                                </td>
-
-                                <td>
-                                    @envio.FechaEnvio.ToString("dd/MM/yyyy HH:mm")
-                                </td>
-
-                                <td>
-                                    @envio.DelegacionOrigen
-                                </td>
-
-                                <td>
-                                    @envio.DelegacionDestino
-                                </td>
-
-                                <td>
-                                    <span class="badge @claseEstado">
-                                        @envio.EstadoEnvio
-                                    </span>
-                                </td>
-
-                                <td class="text-end">
-                                    <a asp-controller="Envios"
-                                       asp-action="Details"
-                                       asp-route-id="@envio.IdEnvio"
-                                       class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </a>
+                                <td colspan="5">
+                                    <div class="dashboard-empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <h6>No hay envíos recientes</h6>
+                                        <p>Aún no hay movimientos para mostrar en este panel.</p>
+                                    </div>
                                 </td>
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
-                                No hay envíos recientes para mostrar.
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="dashboard-panel h-100">
+            <div class="dashboard-panel-header">
+                <div>
+                    <h5>Accesos rápidos</h5>
+                    <p>Operaciones frecuentes del sistema.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-shortcuts">
+                <a asp-controller="Envios"
+                   asp-action="Create"
+                   class="dashboard-shortcut">
+                    <div class="dashboard-shortcut-icon shortcut-primary">
+                        <i class="bi bi-plus-lg"></i>
+                    </div>
+
+                    <div>
+                        <strong>Registrar envío</strong>
+                        <span>Crear un nuevo envío institucional</span>
+                    </div>
+                </a>
+
+                <a asp-controller="Despachos"
+                   asp-action="Index"
+                   class="dashboard-shortcut">
+                    <div class="dashboard-shortcut-icon shortcut-warning">
+                        <i class="bi bi-truck"></i>
+                    </div>
+
+                    <div>
+                        <strong>Despachar</strong>
+                        <span>Confirmar salida de envíos pendientes</span>
+                    </div>
+                </a>
+
+                <a asp-controller="Recepciones"
+                   asp-action="Index"
+                   class="dashboard-shortcut">
+                    <div class="dashboard-shortcut-icon shortcut-success">
+                        <i class="bi bi-check2-circle"></i>
+                    </div>
+
+                    <div>
+                        <strong>Recepcionar</strong>
+                        <span>Confirmar recepción de envíos</span>
+                    </div>
+                </a>
+
+                <a asp-controller="Envios"
+                   asp-action="Index"
+                   class="dashboard-shortcut">
+                    <div class="dashboard-shortcut-icon shortcut-info">
+                        <i class="bi bi-search"></i>
+                    </div>
+
+                    <div>
+                        <strong>Consultar envíos</strong>
+                        <span>Revisar trazabilidad y detalles</span>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 </div>
