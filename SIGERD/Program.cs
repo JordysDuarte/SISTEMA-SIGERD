@@ -26,6 +26,10 @@ using SIGERD.Interfaces.IRespositories.Despachos;
 using SIGERD.Repositories.Despachos;
 using SIGERD.Interfaces.IServices.Despachos;
 using SIGERD.Services.Despachos;
+using SIGERD.Interfaces.IRespositories.Recepciones;
+using SIGERD.Interfaces.IServices.Recepciones;
+using SIGERD.Repositories.Recepciones;
+using SIGERD.Services.Recepciones;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +83,9 @@ builder.Services.AddScoped<IEnvioService, EnvioService>();
 
 builder.Services.AddScoped<IDespachoRepository, DespachoRepository>();
 builder.Services.AddScoped<IDespachoService, DespachoService>();
+
+builder.Services.AddScoped<IRecepcionRepository, RecepcionRepository>();
+builder.Services.AddScoped<IRecepcionService, RecepcionService>();
 
 
 var app = builder.Build();

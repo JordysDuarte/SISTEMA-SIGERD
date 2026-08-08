@@ -31,6 +31,12 @@
     controladorActual,
     "Despachos",
     StringComparison.OrdinalIgnoreCase
+    );
+
+    bool recepcionesActivo = string.Equals(
+    controladorActual,
+    "Recepciones",
+    StringComparison.OrdinalIgnoreCase
 );
 
     bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
@@ -120,13 +126,14 @@
         </li>
 
         <li>
-            <a href="#">
-
-                <i class="bi bi-arrow-down-square-fill"></i>
-
-                <span>Recepciones</span>
-
-            </a>
+            <li>
+                <a asp-controller="Recepciones"
+                   asp-action="Index"
+                   class="@(recepcionesActivo ? "active" : "")">
+                    <i class="bi bi-check2-circle"></i>
+                    <span>Recepciones</span>
+                </a>
+            </li>
         </li>
 
         <li>

@@ -6,24 +6,39 @@ namespace SIGERD.Configurations.Recepciones
 {
     public class RecepcionConfiguration : IEntityTypeConfiguration<Recepcion>
     {
-        public void Configure(EntityTypeBuilder<Recepcion> entity)
+        public void Configure(EntityTypeBuilder<Recepcion> builder)
         {
-            entity.ToTable("Recepciones", "Recepciones");
+            builder.ToTable("Recepciones", "Recepciones");
 
-            entity.HasKey(r => r.idRecepcion);
+            builder.HasKey(r => r.idRecepcion);
 
-            entity.Property(r => r.fechaRecepcion)
-                .IsRequired();
+            builder.Property(r => r.idRecepcion)
+                .HasColumnName("idRecepcion");
 
-            entity.Property(r => r.observaciones)
-                .HasMaxLength(300);
+            builder.Property(r => r.fechaRecepcion)
+                .HasColumnName("fechaRecepcion")
+                .HasColumnType("datetime2");
 
-            entity.HasOne(r => r.Envio)
+            builder.Property(r => r.idEnvioRecepcion)
+                .HasColumnName("idEnvioRecepcion");
+
+            builder.Property(r => r.idUsuarioRecepcion)
+                .HasColumnName("idUsuarioRecepcion");
+
+            builder.Property(r => r.observaciones)
+                .HasColumnName("observaciones")
+                .HasMaxLength(500)
+                .IsUnicode(false);
+
+            builder.HasIndex(r => r.idEnvioRecepcion)
+                .IsUnique();
+
+            builder.HasOne(r => r.Envio)
                 .WithOne(e => e.Recepcion)
                 .HasForeignKey<Recepcion>(r => r.idEnvioRecepcion)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(r => r.Usuario)
+            builder.HasOne(r => r.Usuario)
                 .WithMany(u => u.Recepciones)
                 .HasForeignKey(r => r.idUsuarioRecepcion)
                 .OnDelete(DeleteBehavior.Restrict);
