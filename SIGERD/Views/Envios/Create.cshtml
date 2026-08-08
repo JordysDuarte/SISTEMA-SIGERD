@@ -27,13 +27,35 @@
 
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-6">
-                    <label asp-for="IdDelegacionOrigen" class="form-label"></label>
-                    <select asp-for="IdDelegacionOrigen" asp-items="Model.Delegaciones" class="form-select">
-                        <option value="">Seleccione una delegación</option>
-                    </select>
-                    <span asp-validation-for="IdDelegacionOrigen" class="text-danger"></span>
-                </div>
+                @if (Model.EsSuperAdministrador)
+                {
+                    <div class="col-md-6">
+                        <label asp-for="IdDelegacionOrigen" class="form-label"></label>
+                        <select asp-for="IdDelegacionOrigen" asp-items="Model.Delegaciones" class="form-select">
+                            <option value="">Seleccione una delegación</option>
+                        </select>
+                        <span asp-validation-for="IdDelegacionOrigen" class="text-danger"></span>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-6">
+                        <label asp-for="IdDelegacionOrigen" class="form-label"></label>
+
+                        <input type="hidden" asp-for="IdDelegacionOrigen" />
+
+                        <input type="text"
+                               class="form-control"
+                               value="@Model.DelegacionOrigenUsuario"
+                               readonly />
+
+                        <div class="form-text">
+                            El origen se asigna automáticamente según tu delegación.
+                        </div>
+
+                        <span asp-validation-for="IdDelegacionOrigen" class="text-danger"></span>
+                    </div>
+                }
 
                 <div class="col-md-6">
                     <label asp-for="IdDelegacionDestino" class="form-label"></label>
@@ -41,15 +63,6 @@
                         <option value="">Seleccione una delegación</option>
                     </select>
                     <span asp-validation-for="IdDelegacionDestino" class="text-danger"></span>
-                </div>
-
-                <div class="col-12">
-                    <label asp-for="Observaciones" class="form-label"></label>
-                    <textarea asp-for="Observaciones"
-                              rows="3"
-                              class="form-control"
-                              placeholder="Escriba observaciones generales del envío..."></textarea>
-                    <span asp-validation-for="Observaciones" class="text-danger"></span>
                 </div>
             </div>
         </div>

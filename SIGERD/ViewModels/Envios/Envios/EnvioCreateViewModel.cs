@@ -18,6 +18,10 @@ namespace SIGERD.ViewModels.Envios.Envios
         [Display(Name = "Observaciones")]
         public string? Observaciones { get; set; }
 
+        public bool EsSuperAdministrador { get; set; }
+
+        public string DelegacionOrigenUsuario { get; set; } = string.Empty;
+
         public List<DetalleEnvioCreateViewModel> Detalles { get; set; } = new();
 
         public IEnumerable<SelectListItem> Delegaciones { get; set; } = new List<SelectListItem>();

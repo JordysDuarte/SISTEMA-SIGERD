@@ -98,8 +98,26 @@ namespace SIGERD.Services.Envios
             return envio;
         }
 
-        public async Task<int> CrearAsync(Envio envio)
+        public async Task<int> CrearAsync(
+    Envio envio,
+    int idDelegacionUsuario,
+    bool esSuperAdministrador)
         {
+            if (envio is null)
+            {
+                throw new InvalidOperationException("La información del envío no es válida.");
+            }
+
+            if (!esSuperAdministrador)
+            {
+                if (idDelegacionUsuario <= 0)
+                {
+                    throw new InvalidOperationException("No fue posible identificar la delegación del usuario.");
+                }
+
+                envio.idDelegacionOrigenEnvio = idDelegacionUsuario;
+            }
+
             if (envio.idDelegacionOrigenEnvio <= 0)
             {
                 throw new InvalidOperationException("Debe seleccionar la delegación origen.");
@@ -115,19 +133,27 @@ namespace SIGERD.Services.Envios
                 throw new InvalidOperationException("La delegación origen y destino no pueden ser la misma.");
             }
 
-            if (!await _envioRepository.ExisteDelegacionAsync(envio.idDelegacionOrigenEnvio))
-            {
-                throw new InvalidOperationException("La delegación origen seleccionada no existe.");
-            }
-
-            if (!await _envioRepository.ExisteDelegacionAsync(envio.idDelegacionDestinoEnvio))
-            {
-                throw new InvalidOperationException("La delegación destino seleccionada no existe.");
-            }
-
             if (envio.idUsuarioEnvio <= 0)
             {
                 throw new InvalidOperationException("No fue posible identificar al usuario que registra el envío.");
+            }
+
+            bool existeDelegacionOrigen = await _envioRepository.ExisteDelegacionAsync(
+                envio.idDelegacionOrigenEnvio
+            );
+
+            if (!existeDelegacionOrigen)
+            {
+                throw new InvalidOperationException("La delegación origen no existe.");
+            }
+
+            bool existeDelegacionDestino = await _envioRepository.ExisteDelegacionAsync(
+                envio.idDelegacionDestinoEnvio
+            );
+
+            if (!existeDelegacionDestino)
+            {
+                throw new InvalidOperationException("La delegación destino no existe.");
             }
 
             if (envio.DetallesEnvio == null || !envio.DetallesEnvio.Any())
@@ -135,29 +161,35 @@ namespace SIGERD.Services.Envios
                 throw new InvalidOperationException("Debe agregar al menos un artículo al envío.");
             }
 
-            var articulosProcesados = new HashSet<int>();
+            var articulosRegistrados = new HashSet<int>();
 
             foreach (var detalle in envio.DetallesEnvio)
             {
                 if (detalle.idArticuloDetalleEnvio <= 0)
                 {
-                    throw new InvalidOperationException("Todos los detalles deben tener un artículo válido.");
+                    throw new InvalidOperationException("Debe seleccionar un artículo válido.");
                 }
 
                 if (detalle.cantidad <= 0)
                 {
-                    throw new InvalidOperationException("La cantidad de cada artículo debe ser mayor que cero.");
+                    throw new InvalidOperationException("La cantidad debe ser mayor que cero.");
                 }
 
-                if (!await _envioRepository.ExisteArticuloAsync(detalle.idArticuloDetalleEnvio))
-                {
-                    throw new InvalidOperationException($"El artículo con identificador {detalle.idArticuloDetalleEnvio} no existe.");
-                }
-
-                if (!articulosProcesados.Add(detalle.idArticuloDetalleEnvio))
+                if (!articulosRegistrados.Add(detalle.idArticuloDetalleEnvio))
                 {
                     throw new InvalidOperationException("No se permite repetir el mismo artículo en el mismo envío.");
                 }
+
+                bool existeArticulo = await _envioRepository.ExisteArticuloAsync(
+                    detalle.idArticuloDetalleEnvio
+                );
+
+                if (!existeArticulo)
+                {
+                    throw new InvalidOperationException("Uno de los artículos seleccionados no existe.");
+                }
+
+                detalle.observacionesDetalleEnvio = detalle.observacionesDetalleEnvio?.Trim();
             }
 
             int? idEstadoInicial = await _envioRepository.ObtenerIdEstadoInicialAsync();
@@ -167,9 +199,14 @@ namespace SIGERD.Services.Envios
                 throw new InvalidOperationException("No existe un estado inicial configurado para el envío.");
             }
 
-            envio.fechaEnvio = DateTime.Now;
-            envio.codigoEnvio = await GenerarCodigoAsync(envio.fechaEnvio);
+            DateTime fechaActual = DateTime.Now;
+
+            int consecutivo = await _envioRepository.ObtenerConsecutivoDiarioAsync(fechaActual);
+
+            envio.fechaEnvio = fechaActual;
+            envio.codigoEnvio = $"ENV-{fechaActual:yyyyMMdd}-{consecutivo:0000}";
             envio.idEstadoEnvioEnvio = idEstadoInicial.Value;
+            envio.observaciones = envio.observaciones?.Trim();
 
             await _envioRepository.AgregarAsync(envio);
             await _envioRepository.GuardarAsync();
@@ -177,11 +214,11 @@ namespace SIGERD.Services.Envios
             return envio.idEnvio;
         }
 
-        private async Task<string> GenerarCodigoAsync(DateTime fecha)
-        {
-            int consecutivo = await _envioRepository.ObtenerConsecutivoDiarioAsync(fecha);
-            return $"ENV-{fecha:yyyyMMdd}-{consecutivo:0000}";
-        }
+        //private async Task<string> GenerarCodigoAsync(DateTime fecha)
+        //{
+        //    int consecutivo = await _envioRepository.ObtenerConsecutivoDiarioAsync(fecha);
+        //    return $"ENV-{fecha:yyyyMMdd}-{consecutivo:0000}";
+        //}
 
     }
 }

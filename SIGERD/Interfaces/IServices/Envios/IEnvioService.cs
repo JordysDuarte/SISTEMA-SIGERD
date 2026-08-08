@@ -20,6 +20,10 @@ namespace SIGERD.Interfaces.IServices.Envios
 
         Task<Envio?> ObtenerPorIdAsync(int idEnvio);
 
-        Task<int> CrearAsync(Envio envio);
+        Task<int> CrearAsync(
+            Envio envio,
+            int idDelegacionUsuario,
+            bool esSuperAdministrador                           
+        );
     }
 }

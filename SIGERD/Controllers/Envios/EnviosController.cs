@@ -130,6 +130,8 @@ namespace SIGERD.Controllers.Envios
             var model = new EnvioCreateViewModel();
 
             InicializarDetalles(model, FilasDetallePorDefecto);
+            ConfigurarOrigenSegunUsuario(model);
+
             await CargarCombosAsync(model);
 
             return View(model);
@@ -139,6 +141,16 @@ namespace SIGERD.Controllers.Envios
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EnvioCreateViewModel model)
         {
+            bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
+            int idDelegacionUsuario = ObtenerIdDelegacionActual();
+
+            ConfigurarOrigenSegunUsuario(model);
+
+            if (!esSuperAdministrador)
+            {
+                ModelState.Remove(nameof(model.IdDelegacionOrigen));
+            }
+
             LimpiarDetallesVacios(model);
             ValidarFormulario(model);
 
@@ -146,26 +158,25 @@ namespace SIGERD.Controllers.Envios
             {
                 AsegurarCantidadMinimaDeFilas(model, FilasDetallePorDefecto);
                 await CargarCombosAsync(model);
+
                 return View(model);
-            }
-
-            int idUsuarioActual = ObtenerIdUsuarioActual();
-
-            if (idUsuarioActual <= 0)
-            {
-                MostrarError("No fue posible identificar al usuario autenticado.");
-                return RedirectToAction("Login", "Auth");
             }
 
             try
             {
+                int idUsuarioActual = ObtenerIdUsuarioActual();
+
                 var envio = EnvioMapper.ToEntity(model, idUsuarioActual);
 
-                int idEnvioCreado = await _envioService.CrearAsync(envio);
+                int idEnvio = await _envioService.CrearAsync(
+                    envio,
+                    idDelegacionUsuario,
+                    esSuperAdministrador
+                );
 
                 MostrarExito("El envío fue registrado correctamente.");
 
-                return RedirectToAction(nameof(Details), new { id = idEnvioCreado });
+                return RedirectToAction(nameof(Details), new { id = idEnvio });
             }
             catch (InvalidOperationException ex)
             {
@@ -302,7 +313,18 @@ namespace SIGERD.Controllers.Envios
 
         private async Task CargarCombosAsync(EnvioCreateViewModel model)
         {
-            model.Delegaciones = await _selectListService.ObtenerDelegacionesAsync();
+            var delegaciones = (await _selectListService.ObtenerDelegacionesAsync()).ToList();
+
+            if (!model.EsSuperAdministrador && model.IdDelegacionOrigen > 0)
+            {
+                model.Delegaciones = delegaciones
+                    .Where(d => d.Value != model.IdDelegacionOrigen.ToString())
+                    .ToList();
+            }
+            else
+            {
+                model.Delegaciones = delegaciones;
+            }
 
             var articulos = await _selectListService.ObtenerArticulosAsync();
 
@@ -327,6 +349,19 @@ namespace SIGERD.Controllers.Envios
             }
 
             return 0;
+        }
+
+        private void ConfigurarOrigenSegunUsuario(EnvioCreateViewModel model)
+        {
+            bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
+
+            model.EsSuperAdministrador = esSuperAdministrador;
+            model.DelegacionOrigenUsuario = User.FindFirstValue("Delegacion") ?? "Delegación asignada";
+
+            if (!esSuperAdministrador)
+            {
+                model.IdDelegacionOrigen = ObtenerIdDelegacionActual();
+            }
         }
 
         #endregion
