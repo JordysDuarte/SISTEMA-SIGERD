@@ -2,122 +2,169 @@
 
 @{
     ViewData["Title"] = "Detalle del Envío";
+
+    string estado = Model.EstadoEnvio?.Trim().ToLower() ?? string.Empty;
+
+    string claseEstado = estado switch
+    {
+        "pendiente" => "bg-warning",
+        "en tránsito" => "bg-info text-dark",
+        "en transito" => "bg-info text-dark",
+        "recibido" => "bg-success",
+        "cancelado" => "bg-danger",
+        "extraviado" => "bg-warning text-dark",
+        _ => "bg-secondary"
+    };
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 no-print">
     <div>
         <h2 class="mb-1">Detalle del Envío</h2>
-        <p class="text-muted mb-0">Información general y artículos del envío.</p>
+        <p class="text-muted mb-0">
+            Información general y artículos del envío.
+        </p>
     </div>
 
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-2"></i>Volver
-    </a>
+    <div class="d-flex gap-2">
+        <button type="button"
+                class="btn btn-outline-secondary"
+                onclick="window.print();">
+            <i class="bi bi-printer me-2"></i>
+            Imprimir
+        </button>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Volver
+        </a>
+    </div>
 </div>
 
-<div class="row g-4">
-    <div class="col-lg-5">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Información general</h5>
-            </div>
-            <div class="card-body">
-                <dl class="row mb-0">
-                    <dt class="col-sm-5">Código</dt>
-                    <dd class="col-sm-7">@Model.CodigoEnvio</dd>
+<div class="print-area">
 
-                    <dt class="col-sm-5">Fecha</dt>
-                    <dd class="col-sm-7">@Model.FechaEnvio.ToString("dd/MM/yyyy HH:mm")</dd>
+    <div class="print-header print-only">
+        <h5>Sistema de Trazabilidad de Envíos PUCPA</h5>
+        <p>Detalle del Envío</p>
+    </div>
 
-                    <dt class="col-sm-5">Origen</dt>
-                    <dd class="col-sm-7">@Model.DelegacionOrigen</dd>
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Información general</h5>
+        </div>
 
-                    <dt class="col-sm-5">Destino</dt>
-                    <dd class="col-sm-7">@Model.DelegacionDestino</dd>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4 col-md-3">Código</dt>
+                <dd class="col-sm-8 col-md-9">
+                    @Model.CodigoEnvio
+                </dd>
 
-                    <dt class="col-sm-5">Usuario</dt>
-                    <dd class="col-sm-7">@Model.UsuarioEnvio</dd>
+                <dt class="col-sm-4 col-md-3">Fecha</dt>
+                <dd class="col-sm-8 col-md-9">
+                    @Model.FechaEnvio.ToString("dd/MM/yyyy HH:mm")
+                </dd>
 
-                    <dt class="col-sm-5">Estado</dt>
-                    <dd class="col-sm-7">
-                        <span class="badge
-                            @(Model.EstadoEnvio.Equals("Recibido", StringComparison.OrdinalIgnoreCase) ? "bg-success" :
-                              Model.EstadoEnvio.Equals("Pendiente", StringComparison.OrdinalIgnoreCase) ? "bg-secondary" :
-                              Model.EstadoEnvio.Equals("En tránsito", StringComparison.OrdinalIgnoreCase) || Model.EstadoEnvio.Equals("En transito", StringComparison.OrdinalIgnoreCase) ? "bg-warning text-dark" :
-                              Model.EstadoEnvio.Equals("Cancelado", StringComparison.OrdinalIgnoreCase) ? "bg-danger" :
-                              "bg-primary")">
-                            @Model.EstadoEnvio
-                        </span>
-                    </dd>
-                    <dt class="col-sm-5">Fecha despacho</dt>
-                    <dd class="col-sm-7">
-                        @(Model.FechaDespacho.HasValue
-                            ? Model.FechaDespacho.Value.ToString("dd/MM/yyyy HH:mm")
-                            : "Pendiente de despacho")
-                    </dd>
+                <dt class="col-sm-4 col-md-3">Origen</dt>
+                <dd class="col-sm-8 col-md-9">
+                    @Model.DelegacionOrigen
+                </dd>
 
-                    <dt class="col-sm-5">Usuario despacho</dt>
-                    <dd class="col-sm-7">
-                        @(string.IsNullOrWhiteSpace(Model.UsuarioDespacho)
-                            ? "Pendiente de despacho"
-                            : Model.UsuarioDespacho)
-                    </dd>
+                <dt class="col-sm-4 col-md-3">Destino</dt>
+                <dd class="col-sm-8 col-md-9">
+                    @Model.DelegacionDestino
+                </dd>
 
-                    <dt class="col-sm-5">Observaciones</dt>
-                    <dd class="col-sm-7">@(string.IsNullOrWhiteSpace(Model.Observaciones) ? "Sin observaciones" : Model.Observaciones)</dd>
-                </dl>
-            </div>
+                <dt class="col-sm-4 col-md-3">Usuario</dt>
+                <dd class="col-sm-8 col-md-9">
+                    @Model.UsuarioEnvio
+                </dd>
+
+                <dt class="col-sm-4 col-md-3">Estado</dt>
+                <dd class="col-sm-8 col-md-9">
+                    <span class="badge @claseEstado">
+                        @Model.EstadoEnvio
+                    </span>
+                </dd>
+
+                <dt class="col-sm-4 col-md-3">Fecha despacho</dt>
+                <dd class="col-sm-8 col-md-9">
+                    @(Model.FechaDespacho.HasValue
+                        ? Model.FechaDespacho.Value.ToString("dd/MM/yyyy HH:mm")
+                        : "Pendiente de despacho")
+                </dd>
+
+                <dt class="col-sm-4 col-md-3">Usuario despacho</dt>
+                <dd class="col-sm-8 col-md-9">
+                    @(string.IsNullOrWhiteSpace(Model.UsuarioDespacho)
+                        ? "Pendiente de despacho"
+                        : Model.UsuarioDespacho)
+                </dd>
+
+                <dt class="col-sm-4 col-md-3">Observaciones</dt>
+                <dd class="col-sm-8 col-md-9">
+                    @(string.IsNullOrWhiteSpace(Model.Observaciones)
+                        ? "Sin observaciones"
+                        : Model.Observaciones)
+                </dd>
+            </dl>
         </div>
     </div>
 
-    <div class="col-lg-7">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Artículos enviados</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Artículo</th>
-                                <th>Cantidad</th>
-                                <th>Descripción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.Detalles != null && Model.Detalles.Any())
-                            {
-                                int contador = 1;
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Artículos enviados</h5>
+        </div>
 
-                                foreach (var detalle in Model.Detalles)
-                                {
-                                    <tr>
-                                        <td>@contador</td>
-                                        <td>@detalle.Articulo</td>
-                                        <td>@detalle.Cantidad</td>
-                                        <td>
-                                            @(string.IsNullOrWhiteSpace(detalle.ObservacionesDetalles)
-                                                ? "Sin descripción"
-                                                : detalle.ObservacionesDetalles)
-                                        </td>
-                                    </tr>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 8%;">#</th>
+                            <th style="width: 32%;">Artículo</th>
+                            <th style="width: 15%;">Cantidad</th>
+                            <th style="width: 45%;">Descripción</th>
+                        </tr>
+                    </thead>
 
-                                    contador++;
-                                }
-                            }
-                            else
+                    <tbody>
+                        @if (Model.Detalles != null && Model.Detalles.Any())
+                        {
+                            int contador = 1;
+
+                            foreach (var detalle in Model.Detalles)
                             {
                                 <tr>
-                                    <td colspan="4" class="text-center text-muted py-4">
-                                        No hay artículos registrados en este envío.
+                                    <td>@contador</td>
+
+                                    <td>
+                                        @detalle.Articulo
+                                    </td>
+
+                                    <td>
+                                        @detalle.Cantidad
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(detalle.ObservacionesDetalles)
+                                            ? "Sin descripción"
+                                            : detalle.ObservacionesDetalles)
                                     </td>
                                 </tr>
+
+                                contador++;
                             }
-                        </tbody>
-                    </table>
-                </div>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    No hay artículos registrados en este envío.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
