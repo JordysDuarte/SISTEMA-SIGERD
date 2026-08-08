@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using SIGERD.Constants.Envios;
 using SIGERD.Interfaces.IRespositories.Envios;
 using SIGERD.Interfaces.IServices.Envios;
 using SIGERD.Models.Envios;
@@ -27,6 +28,74 @@ namespace SIGERD.Services.Envios
             }
 
             return await _envioRepository.ObtenerPorIdAsync(idEnvio);
+        }
+
+
+        public async Task<IEnumerable<Envio>> ObtenerPorVistaAsync(
+            string? tipoVista,
+            int idDelegacionUsuario,
+            bool esSuperAdministrador)
+        {
+            string tipoVistaNormalizada = TiposVistaEnvio.Normalizar(
+                tipoVista,
+                esSuperAdministrador
+            );
+
+            if (tipoVistaNormalizada == TiposVistaEnvio.Todos && esSuperAdministrador)
+            {
+                return await _envioRepository.ObtenerTodosAsync();
+            }
+
+            if (idDelegacionUsuario <= 0)
+            {
+                return new List<Envio>();
+            }
+
+            if (tipoVistaNormalizada == TiposVistaEnvio.Destinados)
+            {
+                return await _envioRepository.ObtenerPorDelegacionDestinoAsync(idDelegacionUsuario);
+            }
+
+            return await _envioRepository.ObtenerPorDelegacionOrigenAsync(idDelegacionUsuario);
+        }
+
+        public async Task<Envio?> ObtenerPorIdValidadoAsync(
+            int idEnvio,
+            int idDelegacionUsuario,
+            bool esSuperAdministrador)
+        {
+            if (idEnvio <= 0)
+            {
+                return null;
+            }
+
+            var envio = await _envioRepository.ObtenerPorIdAsync(idEnvio);
+
+            if (envio is null)
+            {
+                return null;
+            }
+
+            if (esSuperAdministrador)
+            {
+                return envio;
+            }
+
+            if (idDelegacionUsuario <= 0)
+            {
+                return null;
+            }
+
+            bool envioRelacionadoConDelegacion =
+                envio.idDelegacionOrigenEnvio == idDelegacionUsuario ||
+                envio.idDelegacionDestinoEnvio == idDelegacionUsuario;
+
+            if (!envioRelacionadoConDelegacion)
+            {
+                return null;
+            }
+
+            return envio;
         }
 
         public async Task<int> CrearAsync(Envio envio)

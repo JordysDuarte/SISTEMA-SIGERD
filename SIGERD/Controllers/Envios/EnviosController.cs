@@ -5,7 +5,9 @@ using SIGERD.Interfaces.IServices.Envios;
 using SIGERD.Mappings;
 using System.Security.Claims;
 using SIGERD.ViewModels.Envios.Envios;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using SIGERD.Constants.Envios;
+using SIGERD.Constants.Seguridad;
+using System.Security.Claims;
 
 namespace SIGERD.Controllers.Envios
 {
@@ -29,25 +31,52 @@ namespace SIGERD.Controllers.Envios
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? tipoVista)
         {
             try
             {
-                var envios = await _envioService.ObtenerTodosAsync();
+                bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
+                int idDelegacionUsuario = ObtenerIdDelegacionActual();
 
-                var model = envios
-                    .Select(EnvioMapper.ToListViewModel)
-                    .ToList();
+                string tipoVistaNormalizada = TiposVistaEnvio.Normalizar(
+                    tipoVista,
+                    esSuperAdministrador
+                );
+
+                var envios = await _envioService.ObtenerPorVistaAsync(
+                    tipoVistaNormalizada,
+                    idDelegacionUsuario,
+                    esSuperAdministrador
+                );
+
+                var model = new EnviosIndexViewModel
+                {
+                    TipoVistaActual = tipoVistaNormalizada,
+                    EsSuperAdministrador = esSuperAdministrador,
+                    Envios = envios
+                        .Select(EnvioMapper.ToListViewModel)
+                        .ToList()
+                };
 
                 return View(model);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocurrió un error al cargar el listado de envíos.");
-                MostrarError("No fue posible cargar el listado de envíos.");
-                return View(new List<EnvioListViewModel>());
+                _logger.LogError(ex, "Ocurrió un error al cargar los envíos.");
+
+                MostrarError("No fue posible cargar los envíos.");
+
+                var model = new EnviosIndexViewModel
+                {
+                    TipoVistaActual = TiposVistaEnvio.Enviados,
+                    EsSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador),
+                    Envios = new List<EnvioListViewModel>()
+                };
+
+                return View(model);
             }
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
@@ -55,16 +84,25 @@ namespace SIGERD.Controllers.Envios
             if (id <= 0)
             {
                 MostrarAdvertencia("El identificador del envío no es válido.");
+
                 return RedirectToAction(nameof(Index));
             }
 
             try
             {
-                var envio = await _envioService.ObtenerPorIdAsync(id);
+                bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
+                int idDelegacionUsuario = ObtenerIdDelegacionActual();
+
+                var envio = await _envioService.ObtenerPorIdValidadoAsync(
+                    id,
+                    idDelegacionUsuario,
+                    esSuperAdministrador
+                );
 
                 if (envio is null)
                 {
-                    MostrarAdvertencia("El envío solicitado no existe.");
+                    MostrarAdvertencia("El envío solicitado no existe o no tienes permiso para verlo.");
+
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -74,8 +112,14 @@ namespace SIGERD.Controllers.Envios
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocurrió un error al cargar el detalle del envío {IdEnvio}.", id);
+                _logger.LogError(
+                    ex,
+                    "Ocurrió un error al cargar el detalle del envío con Id {IdEnvio}.",
+                    id
+                );
+
                 MostrarError("No fue posible cargar el detalle del envío.");
+
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -270,6 +314,19 @@ namespace SIGERD.Controllers.Envios
             {
                 detalle.Articulos = articulos;
             }
+        }
+
+
+        private int ObtenerIdDelegacionActual()
+        {
+            string? idDelegacionClaim = User.FindFirstValue("IdDelegacion");
+
+            if (int.TryParse(idDelegacionClaim, out int idDelegacion))
+            {
+                return idDelegacion;
+            }
+
+            return 0;
         }
 
         #endregion

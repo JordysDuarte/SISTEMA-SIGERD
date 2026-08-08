@@ -15,27 +15,44 @@ namespace SIGERD.Repositories.Envios
             _context = context;
         }
 
-        public async Task<IEnumerable<Envio>> ObtenerTodosAsync()
+        private IQueryable<Envio> ConsultaEnviosBase()
         {
-            return await _context.Envios
+            return _context.Envios
                 .Include(e => e.DelegacionOrigen)
                 .Include(e => e.DelegacionDestino)
                 .Include(e => e.Usuario)
+                .Include(e => e.UsuarioDespacho)
                 .Include(e => e.EstadoEnvio)
                 .Include(e => e.DetallesEnvio)
+                    .ThenInclude(d => d.Articulo);
+        }
+
+        public async Task<IEnumerable<Envio>> ObtenerTodosAsync()
+        {
+            return await ConsultaEnviosBase()
+                .OrderByDescending(e => e.fechaEnvio)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Envio>> ObtenerPorDelegacionOrigenAsync(int idDelegacion)
+        {
+            return await ConsultaEnviosBase()
+                .Where(e => e.idDelegacionOrigenEnvio == idDelegacion)
+                .OrderByDescending(e => e.fechaEnvio)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Envio>> ObtenerPorDelegacionDestinoAsync(int idDelegacion)
+        {
+            return await ConsultaEnviosBase()
+                .Where(e => e.idDelegacionDestinoEnvio == idDelegacion)
                 .OrderByDescending(e => e.fechaEnvio)
                 .ToListAsync();
         }
 
         public async Task<Envio?> ObtenerPorIdAsync(int idEnvio)
         {
-            return await _context.Envios
-                .Include(e => e.DelegacionOrigen)
-                .Include(e => e.DelegacionDestino)
-                .Include(e => e.Usuario)
-                .Include(e => e.EstadoEnvio)
-                .Include(e => e.DetallesEnvio)
-                    .ThenInclude(d => d.Articulo)
+            return await ConsultaEnviosBase()
                 .FirstOrDefaultAsync(e => e.idEnvio == idEnvio);
         }
 

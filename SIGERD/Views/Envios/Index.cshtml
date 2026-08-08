@@ -1,21 +1,81 @@
-﻿@model IEnumerable<SIGERD.ViewModels.Envios.Envios.EnvioListViewModel>
+﻿@model SIGERD.ViewModels.Envios.Envios.EnviosIndexViewModel
+@using SIGERD.Constants.Envios
 
 @{
-    ViewData["Title"] = "Gestión de Envíos";
+    ViewData["Title"] = "Envíos";
+
+    bool todosActivo = Model.TipoVistaActual == TiposVistaEnvio.Todos;
+    bool enviadosActivo = Model.TipoVistaActual == TiposVistaEnvio.Enviados;
+    bool destinadosActivo = Model.TipoVistaActual == TiposVistaEnvio.Destinados;
+
+    string tituloVista = Model.TipoVistaActual switch
+    {
+        TiposVistaEnvio.Todos => "Todos los envíos registrados",
+        TiposVistaEnvio.Destinados => "Envíos destinados a mi delegación",
+        _ => "Envíos enviados por mi delegación"
+    };
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
     <div>
-        <h2 class="mb-1">Gestión de Envíos</h2>
-        <p class="text-muted mb-0">Consulta los envíos registrados en el sistema.</p>
+        <h2 class="mb-1">Envíos</h2>
+        <p class="text-muted mb-0">
+            Consulta y administra los envíos registrados en el sistema.
+        </p>
     </div>
 
     <a asp-action="Create" class="btn btn-primary">
-        <i class="bi bi-plus-circle me-2"></i>Nuevo Envío
+        <i class="bi bi-plus-circle me-2"></i>
+        Nuevo envío
     </a>
 </div>
 
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <ul class="nav nav-pills gap-2 flex-column flex-md-row">
+            @if (Model.EsSuperAdministrador)
+            {
+                <li class="nav-item">
+                    <a asp-action="Index"
+                       asp-route-tipoVista="@TiposVistaEnvio.Todos"
+                       class="nav-link @(todosActivo ? "active" : "")">
+                        <i class="bi bi-list-ul me-1"></i>
+                        Todos
+                    </a>
+                </li>
+            }
+
+            <li class="nav-item">
+                <a asp-action="Index"
+                   asp-route-tipoVista="@TiposVistaEnvio.Enviados"
+                   class="nav-link @(enviadosActivo ? "active" : "")">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                    Enviados por mi delegación
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-action="Index"
+                   asp-route-tipoVista="@TiposVistaEnvio.Destinados"
+                   class="nav-link @(destinadosActivo ? "active" : "")">
+                    <i class="bi bi-box-arrow-in-down-left me-1"></i>
+                    Destinados a mi delegación
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
 <div class="card shadow-sm border-0">
+    <div class="card-header bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+        <div>
+            <h5 class="mb-0">@tituloVista</h5>
+            <small class="text-muted">
+                Total registros: @(Model.Envios?.Count() ?? 0)
+            </small>
+        </div>
+    </div>
+
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -25,34 +85,62 @@
                         <th>Fecha</th>
                         <th>Origen</th>
                         <th>Destino</th>
-                        <th>Usuario</th>
+                        <th>Usuario registra</th>
+                        <th>Artículos</th>
                         <th>Estado</th>
-                        <th>Total artículos</th>
                         <th class="text-end">Acciones</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    @if (Model != null && Model.Any())
+                    @if (Model.Envios != null && Model.Envios.Any())
                     {
-                        foreach (var envio in Model)
+                        foreach (var envio in Model.Envios)
                         {
+                            string estado = envio.EstadoEnvio?.Trim().ToLower() ?? string.Empty;
+
+                            string claseEstado = estado switch
+                            {
+                                "pendiente" => "bg-secondary",
+                                "en tránsito" => "bg-info text-dark",
+                                "en transito" => "bg-info text-dark",
+                                "recibido" => "bg-success",
+                                "cancelado" => "bg-danger",
+                                "extraviado" => "bg-warning text-dark",
+                                _ => "bg-secondary"
+                            };
+
                             <tr>
-                                <td>@envio.CodigoEnvio</td>
-                                <td>@envio.FechaEnvio.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td>@envio.DelegacionOrigen</td>
-                                <td>@envio.DelegacionDestino</td>
-                                <td>@envio.UsuarioEnvio</td>
                                 <td>
-                                    <span class="badge
-                                        @(envio.EstadoEnvio.Equals("Recibido", StringComparison.OrdinalIgnoreCase) ? "bg-success" :
-                                          envio.EstadoEnvio.Equals("Pendiente", StringComparison.OrdinalIgnoreCase) ? "bg-secondary" :
-                                          envio.EstadoEnvio.Equals("En tránsito", StringComparison.OrdinalIgnoreCase) || envio.EstadoEnvio.Equals("En transito", StringComparison.OrdinalIgnoreCase) ? "bg-warning text-dark" :
-                                          envio.EstadoEnvio.Equals("Cancelado", StringComparison.OrdinalIgnoreCase) ? "bg-danger" :
-                                          "bg-primary")">
+                                    <strong>@envio.CodigoEnvio</strong>
+                                </td>
+
+                                <td>
+                                    @envio.FechaEnvio.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    @envio.DelegacionOrigen
+                                </td>
+
+                                <td>
+                                    @envio.DelegacionDestino
+                                </td>
+
+                                <td>
+                                    @envio.UsuarioEnvio
+                                </td>
+
+                                <td>
+                                    @envio.TotalArticulos
+                                </td>
+
+                                <td>
+                                    <span class="badge @claseEstado">
                                         @envio.EstadoEnvio
                                     </span>
                                 </td>
-                                <td>@envio.TotalArticulos</td>
+
                                 <td class="text-end">
                                     <a asp-action="Details"
                                        asp-route-id="@envio.IdEnvio"
@@ -68,7 +156,7 @@
                     {
                         <tr>
                             <td colspan="8" class="text-center text-muted py-4">
-                                No hay envíos registrados.
+                                No hay envíos registrados en esta vista.
                             </td>
                         </tr>
                     }

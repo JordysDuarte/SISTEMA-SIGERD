@@ -6,6 +6,18 @@ namespace SIGERD.Interfaces.IServices.Envios
     {
         Task<IEnumerable<Envio>> ObtenerTodosAsync();
 
+        Task<IEnumerable<Envio>> ObtenerPorVistaAsync(
+            string? tipoVista,
+            int idDelegacionUsuario,
+            bool esSuperAdministrador
+        );
+
+        Task<Envio?> ObtenerPorIdValidadoAsync(
+            int idEnvio,
+            int idDelegacionUsuario,
+            bool esSuperAdministrador
+        );
+
         Task<Envio?> ObtenerPorIdAsync(int idEnvio);
 
         Task<int> CrearAsync(Envio envio);

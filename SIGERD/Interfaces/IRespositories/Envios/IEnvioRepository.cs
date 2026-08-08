@@ -6,6 +6,9 @@ namespace SIGERD.Interfaces.IRespositories.Envios
     {
         Task<IEnumerable<Envio>> ObtenerTodosAsync();
 
+        Task<IEnumerable<Envio>> ObtenerPorDelegacionOrigenAsync(int idDelegacion);
+
+        Task<IEnumerable<Envio>> ObtenerPorDelegacionDestinoAsync(int idDelegacion);
         Task<Envio?> ObtenerPorIdAsync(int idEnvio);
 
         Task AgregarAsync(Envio envio);
@@ -19,7 +22,8 @@ namespace SIGERD.Interfaces.IRespositories.Envios
         Task<int?> ObtenerIdEstadoInicialAsync();
 
         Task<bool> ExisteDelegacionAsync(int idDelegacion);
-
         Task<bool> ExisteArticuloAsync(int idArticulo);
+
+
     }
 }
