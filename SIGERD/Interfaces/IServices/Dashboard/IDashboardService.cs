@@ -4,6 +4,11 @@ namespace SIGERD.Interfaces.IServices.Dashboard
 {
     public interface IDashboardService
     {
-        Task<DashboardViewModel> ObtenerResumenAsync();
+        Task<DashboardViewModel> ObtenerDashboardAsync(
+            int idDelegacionUsuario,
+            string nombreUsuario,
+            string nombreDelegacion,
+            bool esSuperAdministrador
+        );
     }
 }
