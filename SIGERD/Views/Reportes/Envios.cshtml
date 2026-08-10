@@ -1,0 +1,335 @@
+﻿@model SIGERD.ViewModels.Reportes.Envios.ReporteEnviosIndexViewModel
+
+@{
+    ViewData["Title"] = "Reporte de envíos";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="mb-1">Reporte de envíos</h2>
+        <p class="text-muted mb-0">
+            Consulta y filtra los envíos registrados en el sistema.
+        </p>
+    </div>
+
+    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>
+        Volver al dashboard
+    </a>
+</div>
+
+<form asp-action="Envios" method="get" class="mb-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="bi bi-funnel me-2"></i>
+                Filtros de búsqueda
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label asp-for="Filtro.FechaInicio" class="form-label"></label>
+                    <input asp-for="Filtro.FechaInicio"
+                           type="date"
+                           class="form-control"
+                           name="FechaInicio" />
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="Filtro.FechaFin" class="form-label"></label>
+                    <input asp-for="Filtro.FechaFin"
+                           type="date"
+                           class="form-control"
+                           name="FechaFin" />
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="Filtro.IdDelegacionOrigen" class="form-label"></label>
+                    <select asp-for="Filtro.IdDelegacionOrigen"
+                            asp-items="Model.Filtro.Delegaciones"
+                            class="form-select"
+                            name="IdDelegacionOrigen">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="Filtro.IdDelegacionDestino" class="form-label"></label>
+                    <select asp-for="Filtro.IdDelegacionDestino"
+                            asp-items="Model.Filtro.Delegaciones"
+                            class="form-select"
+                            name="IdDelegacionDestino">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="Filtro.IdEstadoEnvio" class="form-label"></label>
+                    <select asp-for="Filtro.IdEstadoEnvio"
+                            asp-items="Model.Filtro.EstadosEnvio"
+                            class="form-select"
+                            name="IdEstadoEnvio">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column flex-md-row justify-content-end gap-2 mt-4">
+                <a asp-action="Envios" class="btn btn-outline-secondary">
+                    <i class="bi bi-eraser me-2"></i>
+                    Limpiar
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-2"></i>
+                    Buscar
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Total envíos</p>
+                        <h3 class="mb-0">@Model.TotalEnvios</h3>
+                    </div>
+
+                    <div class="fs-2 text-primary">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Pendientes</p>
+                        <h3 class="mb-0">@Model.TotalPendientes</h3>
+                    </div>
+
+                    <div class="fs-2 text-warning">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">En tránsito</p>
+                        <h3 class="mb-0">@Model.TotalEnTransito</h3>
+                    </div>
+
+                    <div class="fs-2 text-info">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Recibidos</p>
+                        <h3 class="mb-0">@Model.TotalRecibidos</h3>
+                    </div>
+
+                    <div class="fs-2 text-success">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+        <div>
+            <h5 class="mb-0">Resultados del reporte</h5>
+            <small class="text-muted">
+                Se encontraron @Model.TotalEnvios envío(s) según los filtros aplicados.
+            </small>
+        </div>
+
+        @* <button type="button"
+                class="btn btn-outline-secondary btn-sm"
+                onclick="window.print();">
+            <i class="bi bi-printer me-2"></i>
+            Imprimir
+        </button> *@
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Código</th>
+                        <th>Fecha envío</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Usuario registro</th>
+                        <th>Estado</th>
+                        <th>Fecha despacho</th>
+                        <th>Usuario despacho</th>
+                        <th>Fecha recepción</th>
+                        <th>Usuario recepción</th>
+                        <th>Total artículos</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Resultados != null && Model.Resultados.Any())
+                    {
+                        foreach (var envio in Model.Resultados)
+                        {
+                            string estado = envio.EstadoEnvio?.Trim().ToLower() ?? string.Empty;
+
+                            string claseEstado = estado switch
+                            {
+                                "pendiente" => "bg-warning text-dark",
+                                "en tránsito" => "bg-info text-dark",
+                                "en transito" => "bg-info text-dark",
+                                "recibido" => "bg-success",
+                                "cancelado" => "bg-danger",
+                                "extraviado" => "bg-warning text-dark",
+                                _ => "bg-secondary"
+                            };
+
+                            <tr>
+                                <td>
+                                    <strong>@envio.CodigoEnvio</strong>
+                                </td>
+
+                                <td>
+                                    @envio.FechaEnvio.ToString("dd/MM/yyyy")
+                                </td>
+
+                                <td>
+                                    @envio.DelegacionOrigen
+                                </td>
+
+                                <td>
+                                    @envio.DelegacionDestino
+                                </td>
+
+                                <td>
+                                    @envio.UsuarioEnvio
+                                </td>
+
+                                <td>
+                                    <span class="badge @claseEstado">
+                                        @envio.EstadoEnvio
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @(envio.FechaDespacho.HasValue
+                                        ? envio.FechaDespacho.Value.ToString("dd/MM/yyyy HH:mm")
+                                        : "Sin despacho")
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(envio.UsuarioDespacho)
+                                        ? "Sin despacho"
+                                        : envio.UsuarioDespacho)
+                                </td>
+
+                                <td>
+                                    @(envio.FechaRecepcion.HasValue
+                                        ? envio.FechaRecepcion.Value.ToString("dd/MM/yyyy HH:mm")
+                                        : "Sin recepción")
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(envio.UsuarioRecepcion)
+                                        ? "Sin recepción"
+                                        : envio.UsuarioRecepcion)
+                                </td>
+
+                                <td>
+                                    @envio.TotalArticulos
+                                </td>
+
+                                <td class="text-end">
+                                    <a asp-controller="Envios"
+                                       asp-action="Details"
+                                       asp-route-id="@envio.IdEnvio"
+                                       class="btn btn-sm btn-outline-primary"
+                                       title="Ver detalle del envío">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="12" class="text-center text-muted py-4">
+                                No se encontraron envíos con los filtros aplicados.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        .sidebar,
+        .navbar,
+        .topbar,
+        form,
+        .btn,
+        header,
+        nav,
+        footer {
+            display: none !important;
+        }
+
+        body {
+            background: white !important;
+        }
+
+        .card {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .card-header {
+            border-bottom: 1px solid #ddd !important;
+        }
+
+        table {
+            font-size: 10px;
+        }
+
+        .table-dark th {
+            color: #000 !important;
+            background-color: #f1f1f1 !important;
+        }
+    }
+</style>

@@ -54,7 +54,7 @@
     </div>
 
     <ul class="sidebar-menu">
-
+        <li class="menu-title">Dashboard</li>
         <li>
             <a asp-controller="Dashboard"
                asp-action="Index"
@@ -156,20 +156,13 @@
             </li>
         }
        
-      
-       
-
-        <li class="menu-title">
-            Reportes
-        </li>
-
+          <li class="menu-title">Reportes</li>
         <li>
-            <a href="#">
-
-                <i class="bi bi-bar-chart-fill"></i>
-
+            <a asp-controller="Reportes"
+               asp-action="Envios"
+               class="@(controladorActual == "Reportes" ? "active" : "")">
+                <i class="bi bi-bar-chart-line"></i>
                 <span>Reportes</span>
-
             </a>
         </li>
 
