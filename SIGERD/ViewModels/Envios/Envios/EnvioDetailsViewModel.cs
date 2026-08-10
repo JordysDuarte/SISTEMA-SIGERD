@@ -27,9 +27,17 @@ namespace SIGERD.ViewModels.Envios.Envios
         [Display(Name = "Observaciones")]
         public string? Observaciones {  get; set; }
 
+        [Display(Name = "Fecha despacho")]
         public DateTime? FechaDespacho { get; set; }
 
+        [Display(Name = "Usuario despacho")]
         public string? UsuarioDespacho { get; set; }
+
+        [Display(Name = "Fecha recepción")]
+        public DateTime? FechaRecepcion { get; set; }
+
+        [Display(Name = "Usuario recepción")]
+        public string? UsuarioRecepcion {  get; set; }
 
         public List<DetalleEnvioDetailsViewModel> Detalles { get; set; } = new();
     }

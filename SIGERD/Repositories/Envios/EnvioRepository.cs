@@ -23,6 +23,8 @@ namespace SIGERD.Repositories.Envios
                 .Include(e => e.Usuario)
                 .Include(e => e.UsuarioDespacho)
                 .Include(e => e.EstadoEnvio)
+                .Include(e => e.Recepcion)
+                    .ThenInclude(r => r.Usuario)
                 .Include(e => e.DetallesEnvio)
                     .ThenInclude(d => d.Articulo);
         }

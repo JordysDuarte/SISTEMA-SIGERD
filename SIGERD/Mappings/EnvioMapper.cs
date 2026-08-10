@@ -33,9 +33,11 @@ namespace SIGERD.Mappings
                 DelegacionDestino = envio.DelegacionDestino?.nombreDelegacion ?? "Sin destino",
                 UsuarioEnvio = envio.Usuario?.nombreCompleto ?? "Sin usuario",
                 EstadoEnvio = envio.EstadoEnvio?.nombreEstadoEnvio ?? "Sin estado",
-                Observaciones = envio.observaciones,
                 FechaDespacho = envio.fechaDespacho,
                 UsuarioDespacho = envio.UsuarioDespacho?.nombreCompleto,
+                FechaRecepcion = envio.Recepcion?.fechaRecepcion,
+                UsuarioRecepcion = envio.Recepcion?.Usuario?.nombreCompleto,
+                Observaciones = envio.observaciones,
                 Detalles = envio.DetallesEnvio
                     .Select(detalle => new DetalleEnvioDetailsViewModel
                     {
