@@ -26,6 +26,51 @@ namespace SIGERD.Controllers.Reportes
             _logger = logger;
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> ExportarEnviosExcel(ReporteEnviosFiltroViewModel filtro)
+        {
+            try
+            {
+                bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
+                int idDelegacionUsuario = ObtenerIdDelegacionActual();
+
+                var filtroDto = new ReporteEnviosFiltroDto
+                {
+                    FechaInicio = filtro.FechaInicio,
+                    FechaFin = filtro.FechaFin,
+                    IdDelegacionOrigen = filtro.IdDelegacionOrigen,
+                    IdDelegacionDestino = filtro.IdDelegacionDestino,
+                    IdEstadoEnvio = filtro.IdEstadoEnvio,
+                    IdDelegacionUsuario = idDelegacionUsuario,
+                    EsSuperAdministrador = esSuperAdministrador
+                };
+
+                byte[] archivo = await _reporteEnviosService.ExportarExcelAsync(filtroDto);
+
+                string nombreArchivo = $"Reporte_Envios_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+
+                return File(
+                    archivo,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    nombreArchivo
+                );
+            }
+            catch (InvalidOperationException ex)
+            {
+                MostrarAdvertencia(ex.Message);
+                return RedirectToAction(nameof(Envios), filtro);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error al exportar el reporte de envíos a Excel.");
+
+                MostrarError("No fue posible exportar el reporte a Excel.");
+
+                return RedirectToAction(nameof(Envios), filtro);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> Envios(ReporteEnviosFiltroViewModel filtro)
         {

@@ -6,5 +6,7 @@ namespace SIGERD.Interfaces.IServices.Reportes
     public interface IReporteEnviosService
     {
         Task<ReporteEnviosIndexViewModel> ObtenerReporteAsync(ReporteEnviosFiltroDto filtro);
+
+        Task<byte[]> ExportarExcelAsync(ReporteEnviosFiltroDto filtro);
     }
 }

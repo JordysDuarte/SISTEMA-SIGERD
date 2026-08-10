@@ -19,7 +19,7 @@
 </div>
 
 <form asp-action="Envios" method="get" class="mb-4">
-    <div class="card shadow-sm border-0">
+    <div class="card shadow-sm border-0 report-print-area">
         <div class="card-header bg-white">
             <h5 class="mb-0">
                 <i class="bi bi-funnel me-2"></i>
@@ -161,6 +161,75 @@
     </div>
 </div>
 
+<div class="print-header d-none">
+    <div class="text-center mb-3">
+        <h4 class="mb-1">Sistema de Trazabilidad de Envíos PUCPA</h4>
+        <h5 class="mb-1">Reporte general de envíos</h5>
+        <p class="mb-0">
+            Generado el @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+        </p>
+    </div>
+
+    <div class="mb-3">
+        <strong>Filtros aplicados:</strong>
+
+        <ul class="mb-0">
+            <li>
+                Fecha inicio:
+                @(Model.Filtro.FechaInicio.HasValue
+                    ? Model.Filtro.FechaInicio.Value.ToString("dd/MM/yyyy")
+                    : "Todas")
+            </li>
+
+            <li>
+                Fecha fin:
+                @(Model.Filtro.FechaFin.HasValue
+                    ? Model.Filtro.FechaFin.Value.ToString("dd/MM/yyyy")
+                    : "Todas")
+            </li>
+
+            <li>
+                Delegación origen:
+                @(Model.Filtro.IdDelegacionOrigen.HasValue
+                    ? Model.Filtro.Delegaciones.FirstOrDefault(d => d.Value == Model.Filtro.IdDelegacionOrigen.Value.ToString())?.Text ?? "Seleccionada"
+                    : "Todas")
+            </li>
+
+            <li>
+                Delegación destino:
+                @(Model.Filtro.IdDelegacionDestino.HasValue
+                    ? Model.Filtro.Delegaciones.FirstOrDefault(d => d.Value == Model.Filtro.IdDelegacionDestino.Value.ToString())?.Text ?? "Seleccionada"
+                    : "Todas")
+            </li>
+
+            <li>
+                Estado:
+                @(Model.Filtro.IdEstadoEnvio.HasValue
+                    ? Model.Filtro.EstadosEnvio.FirstOrDefault(e => e.Value == Model.Filtro.IdEstadoEnvio.Value.ToString())?.Text ?? "Seleccionado"
+                    : "Todos")
+            </li>
+        </ul>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-3">
+            <strong>Total envíos:</strong> @Model.TotalEnvios
+        </div>
+
+        <div class="col-3">
+            <strong>Pendientes:</strong> @Model.TotalPendientes
+        </div>
+
+        <div class="col-3">
+            <strong>En tránsito:</strong> @Model.TotalEnTransito
+        </div>
+
+        <div class="col-3">
+            <strong>Recibidos:</strong> @Model.TotalRecibidos
+        </div>
+    </div>
+</div>
+
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
         <div>
@@ -170,12 +239,25 @@
             </small>
         </div>
 
-        @* <button type="button"
-                class="btn btn-outline-secondary btn-sm"
-                onclick="window.print();">
-            <i class="bi bi-printer me-2"></i>
-            Imprimir
-        </button> *@
+        <div class="d-flex gap-2 no-print">
+            <a asp-action="ExportarEnviosExcel"
+               asp-route-FechaInicio="@(Model.Filtro.FechaInicio?.ToString("yyyy-MM-dd"))"
+               asp-route-FechaFin="@(Model.Filtro.FechaFin?.ToString("yyyy-MM-dd"))"
+               asp-route-IdDelegacionOrigen="@Model.Filtro.IdDelegacionOrigen"
+               asp-route-IdDelegacionDestino="@Model.Filtro.IdDelegacionDestino"
+               asp-route-IdEstadoEnvio="@Model.Filtro.IdEstadoEnvio"
+               class="btn btn-outline-success btn-sm">
+                <i class="bi bi-file-earmark-excel me-2"></i>
+                Exportar Excel
+            </a>
+
+            @* <button type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    onclick="window.print();">
+                <i class="bi bi-printer me-2"></i>
+                Imprimir
+            </button> *@
+        </div>
     </div>
 
     <div class="card-body">
@@ -297,39 +379,109 @@
     </div>
 </div>
 
-<style>
+@* <style>
     @@media print {
+        @@page {
+            size: landscape;
+            margin: 10mm;
+        }
+
+        body {
+            background: white !important;
+            font-size: 11px;
+        }
+
+            body * {
+                visibility: hidden !important;
+            }
+
+        .print-header,
+        .print-header *,
+        .report-print-area,
+        .report-print-area * {
+            visibility: visible !important;
+        }
+
+        .print-header {
+            display: block !important;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .report-print-area {
+            position: relative;
+            width: 100%;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
         .sidebar,
         .navbar,
         .topbar,
         form,
         .btn,
+        .no-print,
         header,
         nav,
         footer {
             display: none !important;
         }
 
-        body {
-            background: white !important;
-        }
-
         .card {
-            border: none !important;
             box-shadow: none !important;
+            border: none !important;
         }
 
         .card-header {
             border-bottom: 1px solid #ddd !important;
+            background: white !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .card-body {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .table-responsive {
+            overflow: visible !important;
         }
 
         table {
-            font-size: 10px;
+            width: 100% !important;
+            font-size: 9px;
+            border-collapse: collapse !important;
+        }
+
+        th,
+        td {
+            border: 1px solid #444 !important;
+            padding: 4px !important;
+            vertical-align: middle !important;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
         }
 
         .table-dark th {
             color: #000 !important;
-            background-color: #f1f1f1 !important;
+            background-color: #e9ecef !important;
+        }
+
+        .badge {
+            border: 1px solid #333 !important;
+            color: #000 !important;
+            background: white !important;
+        }
+
+        a[href]:after {
+            content: "";
         }
     }
-</style>
+</style> *@
