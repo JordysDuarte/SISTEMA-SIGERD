@@ -6,22 +6,39 @@ namespace SIGERD.Configurations.Inventario
 {
     public class ArticuloConfiguration : IEntityTypeConfiguration<Articulo>
     {
-        public void Configure(EntityTypeBuilder<Articulo> entity)
+        public void Configure(EntityTypeBuilder<Articulo> builder)
         {
-            entity.ToTable("Articulos", "Inventario");
-            entity.HasKey(a => a.idArticulo);
+            builder.ToTable("Articulos", "Inventario");
 
-            entity.Property(a => a.nombreArticulo)
+            builder.HasKey(a => a.idArticulo);
+
+            builder.Property(a => a.idArticulo)
+                .HasColumnName("idArticulo");
+
+            builder.Property(a => a.nombreArticulo)
+                .HasColumnName("nombreArticulo")
                 .HasMaxLength(150)
+                .IsUnicode(false)
                 .IsRequired();
 
-            entity.Property(a => a.descripcion)
-                .HasMaxLength(200);
+            builder.Property(a => a.descripcion)
+                .HasColumnName("descripcion")
+                .HasMaxLength(200)
+                .IsUnicode(false);
 
-            entity.HasOne(a => a.Categoria)
-                  .WithMany(c => c.Articulos)
-                  .HasForeignKey(a => a.idCategoriaArticulo)
-                  .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(a => a.estado)
+                .HasColumnName("estado");
+
+            builder.Property(a => a.idCategoriaArticulo)
+                .HasColumnName("idCategoriaArticulo");
+
+            builder.HasOne(a => a.Categoria)
+                .WithMany(c => c.Articulos)
+                .HasForeignKey(a => a.idCategoriaArticulo)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(a => a.nombreArticulo)
+                .IsUnique();
         }
     }
 }

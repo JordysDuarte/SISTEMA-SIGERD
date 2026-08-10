@@ -49,11 +49,25 @@ namespace SIGERD.Services.Common
         public async Task<IEnumerable<SelectListItem>> ObtenerArticulosAsync()
         {
             return await _context.Articulos
+                .Where(a => a.estado)
                 .OrderBy(a => a.nombreArticulo)
                 .Select(a => new SelectListItem
                 {
                     Value = a.idArticulo.ToString(),
-                    Text = a.nombreArticulo ?? "Sin nombre"
+                    Text = a.nombreArticulo
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<SelectListItem>> ObtenerCategoriasActivaAsync()
+        {
+            return await _context.Categorias
+                .Where(c => c.estado)
+                .OrderBy(c => c.nombreCategoria)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.idCategoria.ToString(),
+                    Text = c.nombreCategoria
                 })
                 .ToListAsync();
         }

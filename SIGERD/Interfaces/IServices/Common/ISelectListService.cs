@@ -10,6 +10,8 @@ namespace SIGERD.Interfaces.IServices.Common
 
         Task<IEnumerable<SelectListItem>> ObtenerArticulosAsync();
 
+        Task<IEnumerable<SelectListItem>> ObtenerCategoriasActivaAsync();
+
         Task<IEnumerable<SelectListItem>> ObtenerEstadosEnvioAsync();
     }
 }

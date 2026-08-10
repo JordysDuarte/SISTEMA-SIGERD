@@ -1,6 +1,16 @@
-﻿namespace SIGERD.ViewModels.Inventario.Categorias
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SIGERD.ViewModels.Inventario.Categorias
 {
     public class CategoriaEditViewModel
     {
+        public int IdCategoria { get; set; }
+
+        [Required(ErrorMessage = "Debe ingresar el nombre de la categoría.")]
+        [StringLength(100, ErrorMessage = "El nombre de la categoría no debe superar los 100 caracteres.")]
+        [Display(Name = "Nombre de la categoría")]
+        public string NombreCategoria { get; set; } = string.Empty;
+
+        public bool Estado { get; set; }
     }
 }

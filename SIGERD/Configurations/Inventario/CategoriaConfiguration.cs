@@ -1,18 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SIGERD.Models.Inventario; 
+using SIGERD.Models.Inventario;
 
 namespace SIGERD.Configurations.Inventario
 {
     public class CategoriaConfiguration : IEntityTypeConfiguration<Categoria>
     {
-        public void Configure(EntityTypeBuilder<Categoria> entity)
+        public void Configure(EntityTypeBuilder<Categoria> builder)
         {
-            entity.ToTable("Categorias", "Inventario");
-            entity.HasKey(c => c.idCategoria);
-            entity.Property(c => c.nombreCategoria)
-                .HasMaxLength(150)
+            builder.ToTable("Categorias", "Inventario");
+
+            builder.HasKey(c => c.idCategoria);
+
+            builder.Property(c => c.idCategoria)
+                .HasColumnName("idCategoria");
+
+            builder.Property(c => c.nombreCategoria)
+                .HasColumnName("nombreCategoria")
+                .HasMaxLength(100)
+                .IsUnicode(false)
                 .IsRequired();
+
+            builder.Property(c => c.estado)
+                .HasColumnName("estado");
+
+            builder.HasIndex(c => c.nombreCategoria)
+                .IsUnique();
         }
     }
 }

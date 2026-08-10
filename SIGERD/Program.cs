@@ -30,6 +30,10 @@ using SIGERD.Interfaces.IRespositories.Recepciones;
 using SIGERD.Interfaces.IServices.Recepciones;
 using SIGERD.Repositories.Recepciones;
 using SIGERD.Services.Recepciones;
+using SIGERD.Interfaces.IRespositories.Inventario;
+using SIGERD.Repositories.Inventario;
+using SIGERD.Interfaces.IServices.Inventario;
+using SIGERD.Services.Inventario;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,22 +47,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IRolRepository, RolRepository>();
 builder.Services.AddScoped<IRolService, RolService>();
-
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-
 builder.Services.AddScoped<ISelectListService, SelectListService>();
-
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IDashboardService,  DashboardService>();
-
 builder.Services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
-
 builder.Services.AddScoped<IDelegacionRepository, DelegacionRepository>();
 builder.Services.AddScoped<IDelegacionService, DelegacionService>();
-
 builder.Services.AddScoped<IAuthService, AuthService>();
-
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
     options.LoginPath = "/Auth/Login";
@@ -74,18 +71,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 });
 
 builder.Services.AddAuthorization();
-
-
 builder.Services.AddScoped<DataSeeder>();
-
 builder.Services.AddScoped<IEnvioRepository, EnvioRepository>();
 builder.Services.AddScoped<IEnvioService, EnvioService>();
-
 builder.Services.AddScoped<IDespachoRepository, DespachoRepository>();
 builder.Services.AddScoped<IDespachoService, DespachoService>();
-
 builder.Services.AddScoped<IRecepcionRepository, RecepcionRepository>();
 builder.Services.AddScoped<IRecepcionService, RecepcionService>();
+builder.Services.AddScoped<ICategoriaRepository,  CategoriaRepository>();
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+builder.Services.AddScoped<IArticuloRepository, ArticuloRepository>();
+builder.Services.AddScoped<IArticuloService, ArticuloService>();
 
 
 var app = builder.Build();

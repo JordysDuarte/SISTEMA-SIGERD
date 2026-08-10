@@ -39,6 +39,7 @@
     StringComparison.OrdinalIgnoreCase
 );
 
+
     bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
 }
 
@@ -132,25 +133,31 @@
         </li>
 
         
+        @if (esSuperAdministrador)
+        {
+            <li class="menu-title">Catálogos</li>
 
-        <li class="menu-title">
-            Inventario
-        </li>
-        <li>
-            <a href="#">
+            <li>
+                <a asp-controller="Categorias"
+                   asp-action="Index"
+                   class="@(controladorActual == "Categorias" ? "active" : "")">
+                    <i class="bi bi-tags"></i>
+                    <span>Categorías</span>
+                </a>
+            </li>
 
-                <i class="bi bi-box-fill"></i>
-
-                <span>Artículos</span>
-
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="bi bi-tags-fill"></i>
-                <span>Categorías</span>
-            </a>
-        </li>
+            <li>
+                <a asp-controller="Articulos"
+                   asp-action="Index"
+                   class="@(controladorActual == "Articulos" ? "active" : "")">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Artículos</span>
+                </a>
+            </li>
+        }
+       
+      
+       
 
         <li class="menu-title">
             Reportes
