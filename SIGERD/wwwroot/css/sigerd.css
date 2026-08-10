@@ -294,7 +294,7 @@ body {
     overflow: hidden;
 }
 
-    .dashboard-hero::after {
+/*    .dashboard-hero::after {
         content: "";
         position: absolute;
         width: 220px;
@@ -303,7 +303,7 @@ body {
         background: rgba(255, 255, 255, 0.12);
         right: -70px;
         top: -80px;
-    }
+    }*/
 
 .dashboard-hero-content {
     position: relative;
