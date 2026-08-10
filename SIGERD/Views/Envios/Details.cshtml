@@ -33,6 +33,16 @@
             Imprimir
         </button>
 
+        @if (Model.EstadoEnvio.Equals("Pendiente", StringComparison.OrdinalIgnoreCase))
+        {
+            <a asp-action="Edit"
+               asp-route-id="@Model.IdEnvio"
+               class="btn btn-outline-warning">
+                <i class="bi bi-pencil-square me-2"></i>
+                Editar
+            </a>
+        }
+
         <a asp-action="Index" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-2"></i>
             Volver

@@ -51,6 +51,30 @@ namespace SIGERD.Mappings
         }
 
 
+        public static EnvioEditViewModel ToEditViewModel(Envio envio)
+        {
+            return new EnvioEditViewModel
+            {
+                IdEnvio = envio.idEnvio,
+                CodigoEnvio = envio.codigoEnvio ?? string.Empty,
+                FechaEnvio = envio.fechaEnvio,
+                EstadoEnvio = envio.EstadoEnvio?.nombreEstadoEnvio ?? "Sin estado",
+                IdDelegacionOrigen = envio.idDelegacionOrigenEnvio,
+                IdDelegacionDestino = envio.idDelegacionDestinoEnvio,
+                Observaciones = envio.observaciones,
+                Detalles = envio.DetallesEnvio
+                    .Select(detalle => new DetalleEnvioEditViewModel
+                    {
+                        IdDetalleEnvio = detalle.idEnvioDetalleEnvio,
+                        IdArticulo = detalle.idArticuloDetalleEnvio,
+                        Cantidad = detalle.cantidad,
+                        ObservacionesDetalles = detalle.observacionesDetalleEnvio
+                    })
+                    .ToList()
+            };
+        }
+
+
         public static Envio ToEntity(
             EnvioCreateViewModel model,
             int idUsuarioEnvio)
@@ -72,6 +96,32 @@ namespace SIGERD.Mappings
                         idArticuloDetalleEnvio = d.IdArticulo!.Value,
                         cantidad = d.Cantidad!.Value,
                         observacionesDetalleEnvio = d.ObservacionesDetalle?.Trim()
+                    })
+                    .ToList()
+            };
+        }
+
+
+        public static Envio ToEntity(EnvioEditViewModel model)
+        {
+            return new Envio
+            {
+                idEnvio = model.IdEnvio,
+                idDelegacionOrigenEnvio = model.IdDelegacionOrigen,
+                idDelegacionDestinoEnvio = model.IdDelegacionDestino,
+                observaciones = model.Observaciones?.Trim(),
+                DetallesEnvio = model.Detalles
+                    .Where(d =>
+                        d.IdArticulo.HasValue &&
+                        d.IdArticulo.Value > 0 &&
+                        d.Cantidad.HasValue &&
+                        d.Cantidad.Value > 0)
+                    .Select(d => new DetalleEnvio
+                    {
+                        idEnvioDetalleEnvio = d.IdDetalleEnvio ?? 0,
+                        idArticuloDetalleEnvio = d.IdArticulo!.Value,
+                        cantidad = d.Cantidad!.Value,
+                        observacionesDetalleEnvio = d.ObservacionesDetalles?.Trim()
                     })
                     .ToList()
             };

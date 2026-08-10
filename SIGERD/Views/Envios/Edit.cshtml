@@ -1,24 +1,44 @@
-﻿@model SIGERD.ViewModels.Envios.Envios.EnvioCreateViewModel
+﻿@model SIGERD.ViewModels.Envios.Envios.EnvioEditViewModel
 
 @{
-    ViewData["Title"] = "Nuevo Envío";
+    ViewData["Title"] = "Editar Envío";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
     <div>
-        <h2 class="mb-1">Nuevo Envío</h2>
-        <p class="text-muted mb-0">Registra un envío institucional entre delegaciones.</p>
+        <h2 class="mb-1">Editar Envío</h2>
+        <p class="text-muted mb-0">
+            Solo se pueden editar envíos que aún estén en estado Pendiente.
+        </p>
     </div>
 
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-2"></i>Volver
-    </a>
+    <div class="d-flex gap-2">
+        <a asp-action="Details"
+           asp-route-id="@Model.IdEnvio"
+           class="btn btn-outline-primary">
+            <i class="bi bi-eye me-2"></i>
+            Ver detalle
+        </a>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Volver
+        </a>
+    </div>
 </div>
 
-<form asp-action="Create" method="post" id="formCrearEnvio">
+<form asp-action="Edit" method="post" id="formEditarEnvio">
     @Html.AntiForgeryToken()
 
+    <input type="hidden" asp-for="IdEnvio" />
+
     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        Estás editando el envío <strong>@Model.CodigoEnvio</strong>.
+        Esta acción solo está permitida mientras el envío se encuentre en estado <strong>Pendiente</strong>.
+    </div>
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white">
@@ -27,6 +47,21 @@
 
         <div class="card-body">
             <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Código</label>
+                    <input type="text" class="form-control" value="@Model.CodigoEnvio" readonly />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Fecha</label>
+                    <input type="text" class="form-control" value="@Model.FechaEnvio.ToString("dd/MM/yyyy HH:mm")" readonly />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Estado</label>
+                    <input type="text" class="form-control" value="@Model.EstadoEnvio" readonly />
+                </div>
+
                 @if (Model.EsSuperAdministrador)
                 {
                     <div class="col-md-6">
@@ -50,7 +85,7 @@
                                readonly />
 
                         <div class="form-text">
-                            El origen se asigna automáticamente según tu delegación.
+                            El origen se mantiene según tu delegación.
                         </div>
 
                         <span asp-validation-for="IdDelegacionOrigen" class="text-danger"></span>
@@ -67,12 +102,10 @@
 
                 <div class="col-12">
                     <label asp-for="Observaciones" class="form-label"></label>
-
                     <textarea asp-for="Observaciones"
                               rows="3"
                               class="form-control"
                               placeholder="Escriba observaciones generales del envío..."></textarea>
-
                     <span asp-validation-for="Observaciones" class="text-danger"></span>
                 </div>
             </div>
@@ -83,7 +116,7 @@
         <div class="card-header bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
             <div>
                 <h5 class="mb-0">Detalles del envío</h5>
-                <small class="text-muted">Agrega todos los artículos, documentos o paquetes incluidos en el envío.</small>
+                <small class="text-muted">Modifica los artículos, cantidades o descripciones del envío.</small>
             </div>
 
             <button type="button" class="btn btn-sm btn-outline-primary" id="btnAgregarDetalle">
@@ -109,7 +142,11 @@
                         {
                             <tr class="detalle-row">
                                 <td>
-                                    <select name="Detalles[@i].IdArticulo"
+                                    <input type="hidden"
+                                           name="Detalles[@(i)].IdDetalleEnvio"
+                                           value="@Model.Detalles[i].IdDetalleEnvio" />
+
+                                    <select name="Detalles[@(i)].IdArticulo"
                                             id="Detalles_@(i)__IdArticulo"
                                             class="form-select detalle-articulo">
 
@@ -129,12 +166,12 @@
                                     </select>
 
                                     <span class="text-danger field-validation-valid"
-                                          data-valmsg-for="Detalles[@i].IdArticulo"
+                                          data-valmsg-for="Detalles[@(i)].IdArticulo"
                                           data-valmsg-replace="true"></span>
                                 </td>
 
                                 <td>
-                                    <input name="Detalles[@i].Cantidad"
+                                    <input name="Detalles[@(i)].Cantidad"
                                            id="Detalles_@(i)__Cantidad"
                                            value="@Model.Detalles[i].Cantidad"
                                            class="form-control detalle-cantidad"
@@ -143,20 +180,20 @@
                                            placeholder="Cantidad" />
 
                                     <span class="text-danger field-validation-valid"
-                                          data-valmsg-for="Detalles[@i].Cantidad"
+                                          data-valmsg-for="Detalles[@(i)].Cantidad"
                                           data-valmsg-replace="true"></span>
                                 </td>
 
                                 <td>
-                                    <textarea name="Detalles[@i].ObservacionesDetalle"
-                                              id="Detalles_(@i)__ObservacionesDetalle"
+                                    <textarea name="Detalles[@(i)].ObservacionesDetalles"
+                                              id="Detalles_@(i)__ObservacionesDetalles"
                                               class="form-control detalle-observacion"
                                               rows="2"
                                               maxlength="500"
-                                              placeholder="Detalle específico de esta línea...">@Model.Detalles[i].ObservacionesDetalle</textarea>
+                                              placeholder="Detalle específico de esta línea...">@Model.Detalles[i].ObservacionesDetalles</textarea>
 
                                     <span class="text-danger field-validation-valid"
-                                          data-valmsg-for="Detalles[@i].ObservacionesDetalle"
+                                          data-valmsg-for="Detalles[@(i)].ObservacionesDetalles"
                                           data-valmsg-replace="true"></span>
                                 </td>
 
@@ -175,17 +212,21 @@
 
             <div class="alert alert-light border mt-3 mb-0">
                 <i class="bi bi-info-circle me-2"></i>
-                Puedes agregar tantas líneas como necesites. Cada línea debe tener artículo y cantidad.
+                Puedes agregar o quitar líneas mientras el envío siga pendiente.
             </div>
         </div>
     </div>
 
     <div class="d-flex justify-content-end gap-2">
-        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        <a asp-action="Details"
+           asp-route-id="@Model.IdEnvio"
+           class="btn btn-secondary">
+            Cancelar
+        </a>
 
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-save me-2"></i>
-            Registrar envío
+            Guardar cambios
         </button>
     </div>
 </form>
@@ -193,6 +234,10 @@
 <template id="detalleTemplate">
     <tr class="detalle-row">
         <td>
+            <input type="hidden"
+                   name="Detalles[__index__].IdDetalleEnvio"
+                   value="" />
+
             <select name="Detalles[__index__].IdArticulo"
                     id="Detalles___index____IdArticulo"
                     class="form-select detalle-articulo">
@@ -224,15 +269,15 @@
         </td>
 
         <td>
-            <textarea name="Detalles[__index__].ObservacionesDetalle"
-                      id="Detalles___index____ObservacionesDetalle"
+            <textarea name="Detalles[__index__].ObservacionesDetalles"
+                      id="Detalles___index____ObservacionesDetalles"
                       class="form-control detalle-observacion"
                       rows="2"
                       maxlength="500"
                       placeholder="Detalle específico de esta línea..."></textarea>
 
             <span class="text-danger field-validation-valid"
-                  data-valmsg-for="Detalles[__index__].ObservacionesDetalle"
+                  data-valmsg-for="Detalles[__index__].ObservacionesDetalles"
                   data-valmsg-replace="true"></span>
         </td>
 
@@ -250,11 +295,11 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const contenedorDetalles = document.getElementById("contenedorDetalles");
             const btnAgregarDetalle = document.getElementById("btnAgregarDetalle");
             const detalleTemplate = document.getElementById("detalleTemplate");
-            const formCrearEnvio = document.getElementById("formCrearEnvio");
+            const formEditarEnvio = document.getElementById("formEditarEnvio");
 
             function obtenerFilas() {
                 return contenedorDetalles.querySelectorAll(".detalle-row");
@@ -263,14 +308,19 @@
             function reindexarFilas() {
                 const filas = obtenerFilas();
 
-                filas.forEach(function(fila, index) {
+                filas.forEach(function (fila, index) {
+                    const idDetalle = fila.querySelector("input[name$='.IdDetalleEnvio']");
                     const articulo = fila.querySelector(".detalle-articulo");
                     const cantidad = fila.querySelector(".detalle-cantidad");
                     const observacion = fila.querySelector(".detalle-observacion");
 
                     const spanArticulo = fila.querySelector("[data-valmsg-for$='.IdArticulo']");
                     const spanCantidad = fila.querySelector("[data-valmsg-for$='.Cantidad']");
-                    const spanObservacion = fila.querySelector("[data-valmsg-for$='.ObservacionesDetalle']");
+                    const spanObservacion = fila.querySelector("[data-valmsg-for$='.ObservacionesDetalles']");
+
+                    if (idDetalle) {
+                        idDetalle.name = `Detalles[${index}].IdDetalleEnvio`;
+                    }
 
                     if (articulo) {
                         articulo.name = `Detalles[${index}].IdArticulo`;
@@ -283,8 +333,8 @@
                     }
 
                     if (observacion) {
-                        observacion.name = `Detalles[${index}].ObservacionesDetalle`;
-                        observacion.id = `Detalles_${index}__ObservacionesDetalle`;
+                        observacion.name = `Detalles[${index}].ObservacionesDetalles`;
+                        observacion.id = `Detalles_${index}__ObservacionesDetalles`;
                     }
 
                     if (spanArticulo) {
@@ -296,7 +346,7 @@
                     }
 
                     if (spanObservacion) {
-                        spanObservacion.setAttribute("data-valmsg-for", `Detalles[${index}].ObservacionesDetalle`);
+                        spanObservacion.setAttribute("data-valmsg-for", `Detalles[${index}].ObservacionesDetalles`);
                     }
                 });
             }
@@ -316,7 +366,7 @@
                     const fila = boton.closest(".detalle-row");
 
                     if (fila) {
-                        fila.querySelectorAll("select, input, textarea").forEach(function(control) {
+                        fila.querySelectorAll("select, input, textarea").forEach(function (control) {
                             control.value = "";
                         });
                     }
@@ -328,11 +378,11 @@
                 reindexarFilas();
             }
 
-            btnAgregarDetalle.addEventListener("click", function() {
+            btnAgregarDetalle.addEventListener("click", function () {
                 agregarFila();
             });
 
-            contenedorDetalles.addEventListener("click", function(event) {
+            contenedorDetalles.addEventListener("click", function (event) {
                 const botonEliminar = event.target.closest(".btnEliminarDetalle");
 
                 if (botonEliminar) {
@@ -340,7 +390,7 @@
                 }
             });
 
-            formCrearEnvio.addEventListener("submit", function() {
+            formEditarEnvio.addEventListener("submit", function () {
                 reindexarFilas();
             });
 

@@ -203,6 +203,121 @@ namespace SIGERD.Controllers.Envios
             }
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            if (id <= 0)
+            {
+                MostrarAdvertencia("El identificador del envío no es válido.");
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                int idDelegacionUsuario = ObtenerIdDelegacionActual();
+                bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
+
+                var envio = await _envioService.ObtenerParaEditarAsync(
+                    id,
+                    idDelegacionUsuario,
+                    esSuperAdministrador
+                );
+
+                if (envio is null)
+                {
+                    MostrarAdvertencia("El envío no existe, no está pendiente o no tienes permiso para editarlo.");
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var model = EnvioMapper.ToEditViewModel(envio);
+
+                ConfigurarOrigenSegunUsuario(model);
+                await CargarCombosEditAsync(model);
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Ocurrió un error al cargar la edición del envío {IdEnvio}.",
+                    id
+                );
+
+                MostrarError("No fue posible cargar la edición del envío.");
+
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EnvioEditViewModel model)
+        {
+            bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
+            int idDelegacionUsuario = ObtenerIdDelegacionActual();
+
+            ConfigurarOrigenSegunUsuario(model);
+
+            if (!esSuperAdministrador)
+            {
+                ModelState.Remove(nameof(model.IdDelegacionOrigen));
+            }
+
+            LimpiarDetallesVacios(model);
+            ValidarFormulario(model);
+
+            if (!ModelState.IsValid)
+            {
+                AsegurarCantidadMinimaDeFilas(model, FilasDetallePorDefecto);
+                await CargarCombosEditAsync(model);
+                return View(model);
+            }
+
+            try
+            {
+                var envio = EnvioMapper.ToEntity(model);
+
+                await _envioService.ActualizarAsync(
+                    envio,
+                    idDelegacionUsuario,
+                    esSuperAdministrador
+                );
+
+                MostrarExito("El envío fue actualizado correctamente.");
+
+                return RedirectToAction(nameof(Details), new { id = model.IdEnvio });
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+
+                AsegurarCantidadMinimaDeFilas(model, FilasDetallePorDefecto);
+                await CargarCombosEditAsync(model);
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Ocurrió un error al actualizar el envío {IdEnvio}.",
+                    model.IdEnvio
+                );
+
+                ModelState.AddModelError(
+                    string.Empty,
+                    "No fue posible actualizar el envío. Intenta nuevamente."
+                );
+
+                AsegurarCantidadMinimaDeFilas(model, FilasDetallePorDefecto);
+                await CargarCombosEditAsync(model);
+
+                return View(model);
+            }
+        }
+
         #region Métodos privados
 
         private int ObtenerIdUsuarioActual()
@@ -361,6 +476,131 @@ namespace SIGERD.Controllers.Envios
             if (!esSuperAdministrador)
             {
                 model.IdDelegacionOrigen = ObtenerIdDelegacionActual();
+            }
+        }
+
+
+        private void ConfigurarOrigenSegunUsuario(EnvioEditViewModel model)
+        {
+            bool esSuperAdministrador = User.IsInRole(RolesSistema.SuperAdministrador);
+
+            model.EsSuperAdministrador = esSuperAdministrador;
+            model.DelegacionOrigenUsuario = User.FindFirstValue("Delegacion") ?? "Delegación asignada";
+
+            if (!esSuperAdministrador)
+            {
+                model.IdDelegacionOrigen = ObtenerIdDelegacionActual();
+            }
+        }
+
+        private async Task CargarCombosEditAsync(EnvioEditViewModel model)
+        {
+            var delegaciones = (await _selectListService.ObtenerDelegacionesAsync()).ToList();
+
+            if (!model.EsSuperAdministrador && model.IdDelegacionOrigen > 0)
+            {
+                model.Delegaciones = delegaciones
+                    .Where(d => d.Value != model.IdDelegacionOrigen.ToString())
+                    .ToList();
+            }
+            else
+            {
+                model.Delegaciones = delegaciones;
+            }
+
+            var articulos = await _selectListService.ObtenerArticulosAsync();
+
+            model.Articulos = articulos;
+
+            model.Detalles ??= new List<DetalleEnvioEditViewModel>();
+
+            foreach (var detalle in model.Detalles)
+            {
+                detalle.Articulos = articulos;
+            }
+        }
+
+        private void LimpiarDetallesVacios(EnvioEditViewModel model)
+        {
+            model.Detalles ??= new List<DetalleEnvioEditViewModel>();
+
+            model.Detalles = model.Detalles
+                .Where(d =>
+                    d.IdArticulo.HasValue ||
+                    d.Cantidad.HasValue ||
+                    !string.IsNullOrWhiteSpace(d.ObservacionesDetalles))
+                .ToList();
+        }
+
+        private void AsegurarCantidadMinimaDeFilas(EnvioEditViewModel model, int cantidadMinima)
+        {
+            model.Detalles ??= new List<DetalleEnvioEditViewModel>();
+
+            while (model.Detalles.Count < cantidadMinima)
+            {
+                model.Detalles.Add(new DetalleEnvioEditViewModel());
+            }
+        }
+
+        private void ValidarFormulario(EnvioEditViewModel model)
+        {
+            if (model.IdDelegacionOrigen > 0 &&
+                model.IdDelegacionDestino > 0 &&
+                model.IdDelegacionOrigen == model.IdDelegacionDestino)
+            {
+                ModelState.AddModelError(nameof(model.IdDelegacionDestino), "La delegación origen y destino no pueden ser la misma.");
+            }
+
+            if (model.Detalles == null || !model.Detalles.Any())
+            {
+                ModelState.AddModelError(string.Empty, "Debe agregar al menos un artículo al envío.");
+                return;
+            }
+
+            for (int i = 0; i < model.Detalles.Count; i++)
+            {
+                var detalle = model.Detalles[i];
+
+                bool tieneArticulo = detalle.IdArticulo.HasValue && detalle.IdArticulo.Value > 0;
+                bool tieneCantidad = detalle.Cantidad.HasValue && detalle.Cantidad.Value > 0;
+                bool tieneDescripcion = !string.IsNullOrWhiteSpace(detalle.ObservacionesDetalles);
+
+                if (tieneArticulo && !tieneCantidad)
+                {
+                    ModelState.AddModelError($"Detalles[{i}].Cantidad", "Debe ingresar una cantidad válida.");
+                }
+
+                if (!tieneArticulo && tieneCantidad)
+                {
+                    ModelState.AddModelError($"Detalles[{i}].IdArticulo", "Debe seleccionar un artículo.");
+                }
+
+                if (!tieneArticulo && tieneDescripcion)
+                {
+                    ModelState.AddModelError($"Detalles[{i}].IdArticulo", "Debe seleccionar un artículo.");
+                }
+
+                if (detalle.IdArticulo.HasValue && detalle.IdArticulo.Value <= 0)
+                {
+                    ModelState.AddModelError($"Detalles[{i}].IdArticulo", "Debe seleccionar un artículo válido.");
+                }
+
+                if (detalle.Cantidad.HasValue && detalle.Cantidad.Value <= 0)
+                {
+                    ModelState.AddModelError($"Detalles[{i}].Cantidad", "La cantidad debe ser mayor que cero.");
+                }
+            }
+
+            var articulosRepetidos = model.Detalles
+                .Where(d => d.IdArticulo.HasValue && d.IdArticulo.Value > 0)
+                .GroupBy(d => d.IdArticulo!.Value)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
+
+            if (articulosRepetidos.Any())
+            {
+                ModelState.AddModelError(string.Empty, "No se permite repetir el mismo artículo en el mismo envío.");
             }
         }
 

@@ -59,6 +59,179 @@ namespace SIGERD.Services.Envios
             return await _envioRepository.ObtenerPorDelegacionOrigenAsync(idDelegacionUsuario);
         }
 
+
+        public async Task<Envio?> ObtenerParaEditarAsync(
+    int idEnvio,
+    int idDelegacionUsuario,
+    bool esSuperAdministrador)
+        {
+            if (idEnvio <= 0)
+            {
+                return null;
+            }
+
+            var envio = await _envioRepository.ObtenerPorIdAsync(idEnvio);
+
+            if (envio is null)
+            {
+                return null;
+            }
+
+            if (!EsEstadoPendiente(envio))
+            {
+                return null;
+            }
+
+            if (esSuperAdministrador)
+            {
+                return envio;
+            }
+
+            if (idDelegacionUsuario <= 0)
+            {
+                return null;
+            }
+
+            if (envio.idDelegacionOrigenEnvio != idDelegacionUsuario)
+            {
+                return null;
+            }
+
+            return envio;
+        }
+
+
+
+        public async Task ActualizarAsync(
+    Envio envioEditado,
+    int idDelegacionUsuario,
+    bool esSuperAdministrador)
+        {
+            if (envioEditado is null)
+            {
+                throw new InvalidOperationException("La información del envío no es válida.");
+            }
+
+            if (envioEditado.idEnvio <= 0)
+            {
+                throw new InvalidOperationException("El identificador del envío no es válido.");
+            }
+
+            var envioActual = await _envioRepository.ObtenerPorIdAsync(envioEditado.idEnvio);
+
+            if (envioActual is null)
+            {
+                throw new InvalidOperationException("El envío solicitado no existe.");
+            }
+
+            if (!EsEstadoPendiente(envioActual))
+            {
+                throw new InvalidOperationException("Solo se pueden editar envíos en estado Pendiente.");
+            }
+
+            if (!esSuperAdministrador)
+            {
+                if (idDelegacionUsuario <= 0)
+                {
+                    throw new InvalidOperationException("No fue posible identificar la delegación del usuario.");
+                }
+
+                if (envioActual.idDelegacionOrigenEnvio != idDelegacionUsuario)
+                {
+                    throw new InvalidOperationException("No tienes permiso para editar envíos de otra delegación.");
+                }
+
+                envioEditado.idDelegacionOrigenEnvio = envioActual.idDelegacionOrigenEnvio;
+            }
+
+            if (envioEditado.idDelegacionOrigenEnvio <= 0)
+            {
+                throw new InvalidOperationException("Debe seleccionar la delegación origen.");
+            }
+
+            if (envioEditado.idDelegacionDestinoEnvio <= 0)
+            {
+                throw new InvalidOperationException("Debe seleccionar la delegación destino.");
+            }
+
+            if (envioEditado.idDelegacionOrigenEnvio == envioEditado.idDelegacionDestinoEnvio)
+            {
+                throw new InvalidOperationException("La delegación origen y destino no pueden ser la misma.");
+            }
+
+            bool existeDelegacionOrigen = await _envioRepository.ExisteDelegacionAsync(
+                envioEditado.idDelegacionOrigenEnvio
+            );
+
+            if (!existeDelegacionOrigen)
+            {
+                throw new InvalidOperationException("La delegación origen no existe.");
+            }
+
+            bool existeDelegacionDestino = await _envioRepository.ExisteDelegacionAsync(
+                envioEditado.idDelegacionDestinoEnvio
+            );
+
+            if (!existeDelegacionDestino)
+            {
+                throw new InvalidOperationException("La delegación destino no existe.");
+            }
+
+            if (envioEditado.DetallesEnvio == null || !envioEditado.DetallesEnvio.Any())
+            {
+                throw new InvalidOperationException("Debe agregar al menos un artículo al envío.");
+            }
+
+            var articulosRegistrados = new HashSet<int>();
+
+            foreach (var detalle in envioEditado.DetallesEnvio)
+            {
+                if (detalle.idArticuloDetalleEnvio <= 0)
+                {
+                    throw new InvalidOperationException("Debe seleccionar un artículo válido.");
+                }
+
+                if (detalle.cantidad <= 0)
+                {
+                    throw new InvalidOperationException("La cantidad debe ser mayor que cero.");
+                }
+
+                if (!articulosRegistrados.Add(detalle.idArticuloDetalleEnvio))
+                {
+                    throw new InvalidOperationException("No se permite repetir el mismo artículo en el mismo envío.");
+                }
+
+                bool existeArticulo = await _envioRepository.ExisteArticuloAsync(
+                    detalle.idArticuloDetalleEnvio
+                );
+
+                if (!existeArticulo)
+                {
+                    throw new InvalidOperationException("Uno de los artículos seleccionados no existe.");
+                }
+            }
+
+            envioActual.idDelegacionOrigenEnvio = envioEditado.idDelegacionOrigenEnvio;
+            envioActual.idDelegacionDestinoEnvio = envioEditado.idDelegacionDestinoEnvio;
+            envioActual.observaciones = envioEditado.observaciones?.Trim();
+
+            envioActual.DetallesEnvio.Clear();
+
+            foreach (var detalleEditado in envioEditado.DetallesEnvio)
+            {
+                envioActual.DetallesEnvio.Add(new DetalleEnvio
+                {
+                    idEnvioDetalleEnvio = envioActual.idEnvio,
+                    idArticuloDetalleEnvio = detalleEditado.idArticuloDetalleEnvio,
+                    cantidad = detalleEditado.cantidad,
+                    observacionesDetalleEnvio = detalleEditado.observacionesDetalleEnvio?.Trim()
+                });
+            }
+
+            _envioRepository.Actualizar(envioActual);
+            await _envioRepository.GuardarAsync();
+        }
+
         public async Task<Envio?> ObtenerPorIdValidadoAsync(
             int idEnvio,
             int idDelegacionUsuario,
@@ -212,6 +385,14 @@ namespace SIGERD.Services.Envios
             await _envioRepository.GuardarAsync();
 
             return envio.idEnvio;
+        }
+
+
+        private bool EsEstadoPendiente(Envio envio)
+        {
+            string estado = envio.EstadoEnvio?.nombreEstadoEnvio?.Trim() ?? string.Empty;
+
+            return estado.Equals("Pendiente", StringComparison.OrdinalIgnoreCase);
         }
 
         //private async Task<string> GenerarCodigoAsync(DateTime fecha)
