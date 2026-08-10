@@ -85,12 +85,11 @@
             </li>
 
             <li>
-                <a href="#" >
-
-                    <i class="bi bi-shield-lock-fill"></i>
-
+                <a asp-controller="Roles"
+                   asp-action="Index"
+                   class="@(controladorActual == "Roles" ? "active" : "")">
+                    <i class="bi bi-shield-lock"></i>
                     <span>Roles</span>
-
                 </a>
             </li>
         }

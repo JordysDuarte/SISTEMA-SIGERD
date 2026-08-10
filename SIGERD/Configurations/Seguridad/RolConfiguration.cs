@@ -17,7 +17,9 @@ namespace SIGERD.Configurations.Seguridad
                .IsRequired();
 
             entity.Property(r => r.descripcion)
-               .HasMaxLength(150);
+               .HasColumnName("descripcion")
+               .HasMaxLength(150)
+               .IsUnicode(false);
         }
 
     }
