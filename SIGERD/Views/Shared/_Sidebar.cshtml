@@ -67,34 +67,6 @@
             </a>
         </li>
 
-        @if (esSuperAdministrador)
-        {
-            <li class="menu-title">
-                Seguridad
-            </li>
-
-            <li>
-                <a asp-controller="Usuarios"
-                   asp-action="Index"
-                   class="@(usuariosActivo ? "active" : "")">
-
-                    <i class="bi bi-people-fill"></i>
-
-                    <span>Usuarios</span>
-
-                </a>
-            </li>
-
-            <li>
-                <a asp-controller="Roles"
-                   asp-action="Index"
-                   class="@(controladorActual == "Roles" ? "active" : "")">
-                    <i class="bi bi-shield-lock"></i>
-                    <span>Roles</span>
-                </a>
-            </li>
-        }
-
         <li class="menu-title">
             Operaciones
         </li>
@@ -135,6 +107,30 @@
         
         @if (esSuperAdministrador)
         {
+            <li class="menu-title">
+                Seguridad
+            </li>
+
+            <li>
+                <a asp-controller="Usuarios"
+                   asp-action="Index"
+                   class="@(usuariosActivo ? "active" : "")">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>Usuarios</span>
+
+                </a>
+            </li>
+
+            <li>
+                <a asp-controller="Roles"
+                   asp-action="Index"
+                   class="@(controladorActual == "Roles" ? "active" : "")">
+                    <i class="bi bi-shield-lock"></i>
+                    <span>Roles</span>
+                </a>
+            </li>
             <li class="menu-title">Catálogos</li>
 
             <li>
