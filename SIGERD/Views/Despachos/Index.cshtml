@@ -67,17 +67,19 @@
                                         <i class="bi bi-eye-fill"></i>
                                     </a>
 
-                                    <form asp-action="Despachar"
-                                          method="post"
-                                          class="d-inline">
+                                   <form asp-action="Despachar" method="post" class="d-inline">
                                         @Html.AntiForgeryToken()
 
                                         <input type="hidden" name="id" value="@envio.IdEnvio" />
 
-                                        <button type="submit"
-                                                class="btn btn-sm btn-outline-success"
-                                                title="Despachar envío"
-                                                onclick="return confirm('¿Confirma que este envío ya salió físicamente hacia la delegación destino?');">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-success btn-confirmar-estado-envio"
+                                                data-titulo="Despachar envío"
+                                                data-mensaje="¿Deseas despachar este envío? El estado cambiará de Pendiente a En tránsito."
+                                                data-icono="question"
+                                                data-confirmar="Sí, despachar"
+                                                data-cancelar="Cancelar"
+                                                title="Despachar envío">
                                             <i class="bi bi-truck"></i>
                                         </button>
                                     </form>

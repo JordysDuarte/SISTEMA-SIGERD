@@ -145,9 +145,9 @@
     <div class="d-flex justify-content-end gap-2">
         <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 
-        <button type="submit"
-                class="btn btn-success"
-                onclick="return confirm('¿Confirma que este envío fue recibido correctamente?');">
+        <button type="button"
+            id="btnConfirmarRecepcion"
+            class="btn btn-success">
             <i class="bi bi-check2-circle me-2"></i>
             Confirmar recepción
         </button>
@@ -156,4 +156,40 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const botonConfirmar = document.getElementById("btnConfirmarRecepcion");
+
+            if (!botonConfirmar) {
+                return;
+            }
+
+            botonConfirmar.addEventListener("click", function () {
+                const formulario = botonConfirmar.closest("form");
+
+                if (!formulario) {
+                    return;
+                }
+
+                Swal.fire({
+                    title: "Confirmar recepción",
+                    text: "¿Confirma que este envío fue recibido correctamente? El estado cambiará a Recibido.",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Sí, confirmar recepción",
+                    cancelButtonText: "Cancelar",
+                    confirmButtonColor: "#0F4C81",
+                    cancelButtonColor: "#6c757d",
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        formulario.submit();
+                    }
+                });
+            });
+        });
+    </script>
 }
